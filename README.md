@@ -1,4 +1,5 @@
 # CueKey v1.0.0
+Created by [Raj Chaudhuri](https://github.com/rajch) and [Dr Nitin Paranjape](https://efficiency365.com)
 
 Create images of keyboard key sequences. Download as transparent PNG files.
 This is useful for creating user manuals, instructional videos or educational content.
