@@ -23,7 +23,7 @@ This is useful for creating user manuals, instructional videos or educational co
   * Image for SHIFT CTRL C is created.
 3. Scale the image as needed
   * Default scale is 200%
-  * Range is between 100% and 500% in 50% increments
+  * Range is between 50% and 500% in 50% increments
 4. Save image
   * Click the Save PNG button.
   * Transparent PNG file is saved in currently selected scale.
