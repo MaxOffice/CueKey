@@ -1,0 +1,337 @@
+document.addEventListener('DOMContentLoaded', function () {
+    const keyPanel = document.getElementById('keyPanel');
+    const txtInput = document.getElementById('txtInput');
+    const displayContent = document.getElementById('displayContent');
+    const saveBtn = document.getElementById('saveBtn');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const zoomIn = document.getElementById('zoomIn');
+    const zoomOut = document.getElementById('zoomOut');
+    const zoomReset = document.getElementById('zoomReset');
+    const zoomValue = document.getElementById('zoomValue');
+    const statusZoom = document.getElementById('status');
+    const saveStatus = document.getElementById('saveStatus');
+    const chkWinkey = document.getElementById('chkWinKey');
+    const addMetaBtn = document.getElementById('addMetaBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const backspaceBtn = document.getElementById('backspaceBtn');
+    const txtCustom = document.getElementById('txtCustom');
+    const addCustomBtn = document.getElementById('addCustomBtn');
+
+    const zoomMin = 50;
+    const zoomMax = 500;
+    const zoomIncrement = 50;
+    const zoomDefault = 200;
+
+    let zoom = zoomDefault;
+    updateZoom();
+
+    const keyString = (keycap, big) => {
+        const classString = `key${big != "" ? ` ${big}` : ""}`;
+        return `<span class="${classString}"><span>${keycap}</span></span>`;
+    }
+
+    const eatKey = (modifiers) => "";
+
+    const modifierKeyMap = {
+        "Meta": () => keyString("<img class='keylogo' src='images/WindowsLogo-2012.svg'>", "bigkey"),
+        "Shift": () => keyString("Shift    ⇧", "bigbigkey"),
+        "Control": () => keyString("Ctrl", "bigkey"),
+        "Alt": () => keyString("Alt", "bigkey"),
+    }
+
+    const modifierCountMap = {
+        "Meta": 0,
+        "Shift": 0,
+        "Control": 0,
+        "Alt": 0,
+    }
+
+    const specialKeyMap = {
+        "Meta": eatKey,
+        "Shift": eatKey,
+        "Control": eatKey,
+        "Alt": eatKey,
+        " ": (m) => keyString("Spacebar", "bigbigkey"),
+        "Escape": (m) => keyString("Esc", "notransform"),
+        "Tab": (m) => keyString("Tab ⭾", "bigkey"),
+        "PageUp": (m) => keyString("PgUp", "notransform"),
+        "PageDown": (m) => keyString("PgDn", "notransform"),
+        "Home": (m) => keyString("Home", "notransform"),
+        "End": (m) => keyString("End", "notransform"),
+        "Backspace": (m) => keyString("⌫ Backspace", "bigbigkey"),
+        "Delete": (m) => keyString("Del", "bigkey"),
+        "Insert": (m) => keyString("Ins", "bigkey"),
+        "CapsLock": (m) => keyString("Caps Lock", "bigbigkey"),
+        "Enter": (m) => keyString("Enter ⮠ ", "bigbigkey"),
+        "ArrowUp": (m) => keyString("🡅", ""),
+        "ArrowRight": (m) => keyString("🡆", ""),
+        "ArrowDown": (m) => keyString("🡇", ""),
+        "ArrowLeft": (m) => keyString("🡄", ""),
+        "Pause": (m) => keyString("Pause", "bigkey"),
+        "NumLock": (m) => keyString("Num<br>Lock", "bigkey"),
+        "PrintScreen": (m) => keyString("Prt Scr", "bigkey"),
+        "ScrollLock": (m) => keyString("Srl Lck", "bigkey"),
+        "!": (m) => keyString("1", ""),
+        "@": (m) => keyString("2", ""),
+        "#": (m) => keyString("3", ""),
+        "$": (m) => keyString("4", ""),
+        "%": (m) => keyString("5", ""),
+        "^": (m) => keyString("6", ""),
+        "&": (m) => keyString("7", ""),
+        "*": (m) => keyString(m.length == 0 ? "*" : "8", ""),
+        "(": (m) => keyString("9", ""),
+        ")": (m) => keyString("0", ""),
+        "_": (m) => keyString("-", ""),
+        "+": (m) => keyString(m.length == 0 ? "+" : "=", ""),
+        "<": (m) => keyString(",", ""),
+        ">": (m) => keyString(".", ""),
+        "?": (m) => keyString("/", ""),
+        ":": (m) => keyString(";", ""),
+        "\"": (m) => keyString("'", ""),
+        "|": (m) => keyString("\\", ""),
+        "{": (m) => keyString("[", ""),
+        "}": (m) => keyString("]", ""),
+        "~": (m) => keyString("`", ""),
+    }
+
+    const isModifierKey = (keypressed) => Object.hasOwn(modifierKeyMap, keypressed);
+
+    /**
+     * 
+     * @param {string[]} modifiers 
+     * @param {string} keypressed 
+     */
+    const processKeys = (modifiers, keypressed) => {
+        // If the key just released is a modifier, check
+        // if it has already been processed. If not, 
+        // process it immediately, and don't precess any
+        // other keys.
+        if (isModifierKey(keypressed)) {
+            modifierCountMap[keypressed]--;
+            if (modifierCountMap[keypressed] < 0) {
+                modifierCountMap[keypressed] = 0;
+                return modifierKeyMap[keypressed]();
+            } else {
+                return "";
+            }
+        }
+
+        // Process normal keys
+        let normalkeys;
+        if (Object.hasOwn(specialKeyMap, keypressed)) {
+            normalkeys = specialKeyMap[keypressed](modifiers);
+        } else {
+            normalkeys = keyString(keypressed, "")
+        }
+        normalkeys = normalkeys.trim();
+
+        // Process modifiers
+        let modifierkeys = "";
+        modifierkeys = modifiers.reduce(
+            (prev, current) => {
+                modifierCountMap[current]++;
+                return prev + modifierKeyMap[current]()
+            },
+            ""
+        );
+
+        let result = modifierkeys + normalkeys;
+        return result;
+    }
+
+    // Capture keyboard input
+    txtInput.addEventListener('keydown', function (e) {
+        e.preventDefault();
+    });
+
+    txtInput.addEventListener('keyup', function (e) {
+        e.preventDefault();
+
+        let keyPressed = e.key;
+        let modifiers = [];
+
+        if (e.metaKey || chkWinkey.checked) modifiers.push('Meta');
+        if (e.shiftKey) modifiers.push('Shift');
+        if (e.ctrlKey) modifiers.push('Control');
+        if (e.altKey) modifiers.push('Alt');
+
+        let displayText = processKeys(modifiers, keyPressed);
+        let styledOutput = displayText;
+
+        displayContent.innerHTML += styledOutput;
+
+        if (styledOutput != "") {
+            backspaceBtn.classList.remove('hidden');
+        }
+    });
+
+    // Zoom functionality
+    function updateZoom () {
+        keyPanel.style.transform = `scale(${zoom / 100})`;
+        keyPanel.style.transformOrigin = 'top left';
+        zoomValue.textContent = `${zoom}%`;
+        statusZoom.textContent = `Zoom: ${zoom}%`;
+    }
+
+    zoomIn.addEventListener('click', function () {
+        zoom = Math.min(zoom + zoomIncrement, zoomMax);
+        updateZoom();
+    });
+
+    zoomOut.addEventListener('click', function () {
+        zoom = Math.max(zoom - zoomIncrement, zoomMin);
+        updateZoom();
+    });
+
+    zoomReset.addEventListener('click', function () {
+        zoom = zoomDefault;
+        updateZoom();
+    });
+
+    // Save button functionality
+    saveBtn.addEventListener('click', function () {
+        saveStatus.textContent = "Saving...";
+
+        // Get current zoom level to preserve in PNG
+        const currentZoom = zoom / 100;
+
+        // Temporary adjustments to ensure complete capture
+        const displayContentElem = document.getElementById('displayContent');
+        const keyPanelElem = document.getElementById('keyPanel');
+
+        // Store original styles
+        const originalKeyPanelWidth = keyPanelElem.style.width;
+        const originalKeyPanelHeight = keyPanelElem.style.height;
+        const originalKeyPanelOverflow = keyPanelElem.style.overflow;
+        const originalTransformOrigin = keyPanelElem.style.transformOrigin;
+
+        // Make sure content is not clipped during capture but keep zoom scale
+        keyPanelElem.style.width = 'auto';
+        keyPanelElem.style.height = 'auto';
+        keyPanelElem.style.overflow = 'visible';
+        keyPanelElem.style.transformOrigin = '0 0';  // Ensure consistent scaling from top-left
+
+        // Create a wrapper div to maintain the zoom
+        const wrapper = document.createElement('div');
+        wrapper.style.transform = `scale(${currentZoom})`;
+        wrapper.style.transformOrigin = '0 0';
+        wrapper.style.width = 'fit-content';
+        wrapper.style.height = 'fit-content';
+
+        // Clone the display content to work with
+        const clonedContent = displayContentElem.cloneNode(true);
+        wrapper.appendChild(clonedContent);
+        document.body.appendChild(wrapper);
+
+        // Use html2canvas to capture the zoomed wrapper
+        html2canvas(wrapper, {
+            backgroundColor: null,  // Transparent background
+            scale: 5,               // Not Higher quality
+            logging: false,
+            windowWidth: document.documentElement.offsetWidth,
+            windowHeight: document.documentElement.offsetHeight
+        }).then(function (canvas) {
+            // Create temporary link for download
+            const link = document.createElement('a');
+            link.download = `key-capture-${zoom}pct.png`;
+
+            // Convert canvas to data URL
+            link.href = canvas.toDataURL('image/png');
+
+            // Append to body, click, and remove
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Remove the temporary wrapper
+            document.body.removeChild(wrapper);
+
+            // Restore original styles
+            keyPanelElem.style.width = originalKeyPanelWidth;
+            keyPanelElem.style.height = originalKeyPanelHeight;
+            keyPanelElem.style.overflow = originalKeyPanelOverflow;
+            keyPanelElem.style.transformOrigin = originalTransformOrigin;
+
+            // Update status
+            saveStatus.textContent = `Saved at ${zoom}% zoom as PNG!`;
+            setTimeout(() => {
+                saveStatus.textContent = "Ready";
+            }, 3000);
+        }).catch(error => {
+            console.error("Error saving image:", error);
+
+            // Remove the temporary wrapper
+            if (document.body.contains(wrapper)) {
+                document.body.removeChild(wrapper);
+            }
+
+            // Restore original styles on error too
+            keyPanelElem.style.width = originalKeyPanelWidth;
+            keyPanelElem.style.height = originalKeyPanelHeight;
+            keyPanelElem.style.overflow = originalKeyPanelOverflow;
+            keyPanelElem.style.transformOrigin = originalTransformOrigin;
+
+            saveStatus.textContent = "Error saving image";
+            setTimeout(() => {
+                saveStatus.textContent = "Ready";
+            }, 3000);
+        });
+    });
+
+    // Add meta button functionality
+    addMetaBtn.addEventListener('click', function () {
+        displayContent.innerHTML += processKeys(['Meta'], 'Meta');
+        backspaceBtn.classList.remove('hidden');
+        txtInput.focus();
+    })
+
+    // Clear button functionality
+    clearBtn.addEventListener('click', function () {
+        displayContent.innerHTML = "";
+        backspaceBtn.classList.add('hidden');
+        txtCustom.value = "Blank";
+        modifierCountMap.Alt = 0;
+        modifierCountMap.Control = 0;
+        modifierCountMap.Shift = 0;
+        modifierCountMap.Meta = 0;
+        txtInput.textContent = "";
+        txtInput.focus();
+    });
+
+    // Backspace button functionality
+    backspaceBtn.addEventListener('click', function () {
+        const lastElement = displayContent.querySelector('span.key:last-child');
+        if (lastElement) {
+            displayContent.removeChild(lastElement);
+        }
+
+        if (displayContent.childNodes.length == 0) {
+            backspaceBtn.classList.add('hidden');
+        }
+        txtInput.focus();
+    });
+
+    // Add Custom Button Functionality
+    addCustomBtn.addEventListener('click', function () {
+        if (txtCustom.value == 'Blank' || txtCustom.value == '') {
+            displayContent.innerHTML += keyString(' ', '');
+        } else {
+            const textLength = txtCustom.value.length;
+            let sizeClass = "";
+            if (textLength > 9) {
+                sizeClass = "bigbigkey ";
+            } else if (textLength > 4) {
+                sizeClass = "bigkey "
+            }
+            sizeClass += "notransform";
+
+            displayContent.innerHTML += keyString(txtCustom.value, sizeClass);
+        }
+        backspaceBtn.classList.remove("hidden");
+    })
+
+    // Settings button functionality
+    settingsBtn.addEventListener('click', function () {
+        alert('Settings panel would open here');
+    });
+});

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CueKey</title>
+    <!-- Add html2canvas library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/keystyles.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+
+<body>
+    <div class="toolbar">
+        <div class="logo">CueKey</div>
+        <div class="tools">
+            <div class="zoom-controls hidden">
+                <input id="chkWinKey" class="zoom-btn" type="checkbox" value="false" title="Add Meta Key">
+                <label for="chkWinKey" class="zoom-btn" accesskey="k">Add <img class="metalogo"
+                        src="images/WindowsLogo-2012.svg"> <u>K</u>ey</label>
+            </div>
+            <button class="btn hidden" id="backspaceBtn" title="Remove the last typed key">
+                <span style="font-size: 1rem;">⌫</span>
+                Bksp
+            </button>
+            <button class="btn" id="addMetaBtn" title="Add Windows key without invoking actions">
+                Add
+                <span style="font-size: 1rem;">
+                    <img class="metalogo" src="images/WindowsLogo-2012.svg">
+                </span>
+            </button>
+            <div class="zoom-controls" title="Max 15 characters">
+                <label class="zoom-btn">Custom: </label>
+                <input id="txtCustom" type="text" value="Blank" maxlength="15">
+                <button id="addCustomBtn" class="btn">Add</button>
+            </div>
+
+            <div class="zoom-controls" title="Min 100% -  Max 500% - increment 50%">
+                <label class="zoom-btn">Zoom: </label>
+                <button class="zoom-btn" id="zoomOut">-</button>
+                <span class="zoom-level" id="zoomValue">300%</span>
+                <button class="zoom-btn" id="zoomReset">↺</button>
+                <button class="zoom-btn" id="zoomIn">+</button>
+            </div>
+
+            <button class="btn" id="saveBtn" title="Save as PNG with transparent background">
+                <span style="font-size: 1rem;"><strong>⭳</strong></span>
+                Save PNG
+            </button>
+            <button class="btn" id="clearBtn" title="Remove all keys and start over">
+                <span style="font-size: 1rem;">❌</span>
+                Clear
+            </button>
+            <button class="btn btn-settings hidden" id="settingsBtn">
+                <span style="font-size: 1rem;">⚙️</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="panel-container">
+            <div id="keyPanel">
+                <div class="key-content" id="displayContent"></div>
+            </div>
+        </div>
+
+        <div class="input-container">
+            <textarea id="txtInput" placeholder="Click here, then press any key or key combination."></textarea>
+        </div>
+
+        <div class="status-bar">
+            <div id="saveStatus">Ready</div>
+            <div id="gitHubLink" style="align-self: right;">v1.0.0 | <a href="https://github.com/MaxOffice/CueKey">GitHub Repository</a></div>
+            <div id="status" class="hidden">Zoom: 100%</div>
+        </div>
+    </div>
+
+    <script src="js/cuekey.js"></script>
+</body>
+
+</html>
