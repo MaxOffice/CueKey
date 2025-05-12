@@ -31,7 +31,7 @@ This is useful for creating user manuals, instructional videos or educational co
 
 ## How to correct mistakes
 If you press Backspace key, it will generate an image for it.
-To correct mistakes, click the Backspace button on top. 
+To correct mistakes, click the Backsp button on top. 
 This will remove the last typed key.
 Click the Clear button to delete all keystrokes.
 
