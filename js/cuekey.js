@@ -17,14 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const txtCustom = document.getElementById('txtCustom');
     const addCustomBtn = document.getElementById('addCustomBtn');
 
-    const zoomMin = 50;
-    const zoomMax = 500;
-    const zoomIncrement = 50;
-    const zoomDefault = 200;
-
-    let zoom = zoomDefault;
-    updateZoom();
-
+    // Input functionality
     const keyString = (keycap, big) => {
         const classString = `key${big != "" ? ` ${big}` : ""}`;
         return `<span class="${classString}"><span>${keycap}</span></span>`;
@@ -78,11 +71,11 @@ document.addEventListener('DOMContentLoaded', function () {
         "%": (m) => keyString("5", ""),
         "^": (m) => keyString("6", ""),
         "&": (m) => keyString("7", ""),
-        "*": (m) => keyString(m.length == 0 ? "*" : "8", ""),
+        "*": (m) => keyString(m.length === 0 ? "*" : "8", ""),
         "(": (m) => keyString("9", ""),
         ")": (m) => keyString("0", ""),
         "_": (m) => keyString("-", ""),
-        "+": (m) => keyString(m.length == 0 ? "+" : "=", ""),
+        "+": (m) => keyString(m.length === 0 ? "+" : "=", ""),
         "<": (m) => keyString(",", ""),
         ">": (m) => keyString(".", ""),
         "?": (m) => keyString("/", ""),
@@ -97,7 +90,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const isModifierKey = (keypressed) => Object.hasOwn(modifierKeyMap, keypressed);
 
     /**
-     * 
+     * processKeys decides how modifiers and a normal
+     * key are processed, based on how many times the
+     * modifiers have already been processed.
      * @param {string[]} modifiers 
      * @param {string} keypressed 
      */
@@ -139,11 +134,12 @@ document.addEventListener('DOMContentLoaded', function () {
         return result;
     }
 
-    // Capture keyboard input
+    // Prevent keypress from showing up in textarea
     txtInput.addEventListener('keydown', function (e) {
         e.preventDefault();
     });
 
+    // Capture keyboard input on key release
     txtInput.addEventListener('keyup', function (e) {
         e.preventDefault();
 
@@ -165,7 +161,24 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // Set ready or not status
+    txtInput.addEventListener('focus', e => {
+        saveStatus.textContent = "Ready";
+    });
+
+    txtInput.addEventListener('blur', e => {
+        saveStatus.textContent = "Click the input area.";
+    });
+
     // Zoom functionality
+    const zoomMin = 50;
+    const zoomMax = 500;
+    const zoomIncrement = 50;
+    const zoomDefault = 200;
+
+    let zoom = zoomDefault;
+    updateZoom();
+
     function updateZoom () {
         keyPanel.style.transform = `scale(${zoom / 100})`;
         keyPanel.style.transformOrigin = 'top left';
@@ -255,7 +268,8 @@ document.addEventListener('DOMContentLoaded', function () {
             // Update status
             saveStatus.textContent = `Saved at ${zoom}% zoom as PNG!`;
             setTimeout(() => {
-                saveStatus.textContent = "Ready";
+                txtInput.focus();
+                // saveStatus.textContent = "Ready";
             }, 3000);
         }).catch(error => {
             console.error("Error saving image:", error);
@@ -273,7 +287,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             saveStatus.textContent = "Error saving image";
             setTimeout(() => {
-                saveStatus.textContent = "Ready";
+                txtInput.focus();
+                //saveStatus.textContent = "Ready";
             }, 3000);
         });
     });
@@ -305,15 +320,23 @@ document.addEventListener('DOMContentLoaded', function () {
             displayContent.removeChild(lastElement);
         }
 
-        if (displayContent.childNodes.length == 0) {
+        if (displayContent.childNodes.length === 0) {
             backspaceBtn.classList.add('hidden');
         }
         txtInput.focus();
     });
 
     // Add Custom Button Functionality
+    txtCustom.addEventListener('keyup', e => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+
+            addCustomBtn.click();
+        }
+    });
+
     addCustomBtn.addEventListener('click', function () {
-        if (txtCustom.value == 'Blank' || txtCustom.value == '') {
+        if (txtCustom.value === 'Blank' || txtCustom.value === '') {
             displayContent.innerHTML += keyString(' ', '');
         } else {
             const textLength = txtCustom.value.length;
@@ -328,7 +351,8 @@ document.addEventListener('DOMContentLoaded', function () {
             displayContent.innerHTML += keyString(txtCustom.value, sizeClass);
         }
         backspaceBtn.classList.remove("hidden");
-    })
+        txtInput.focus();
+    });
 
     // Settings button functionality
     settingsBtn.addEventListener('click', function () {
