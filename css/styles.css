@@ -155,7 +155,7 @@ body {
 
 #txtInput:focus {
     outline: none;
-    border-color: #999999 ;
+    border-color: #999999;
 }
 
 .status-bar {
@@ -222,7 +222,8 @@ img.metalogo {
     display: none;
 }
 
-.status-bar a, .status-bar a:visited {
+.status-bar a,
+.status-bar a:visited {
     color: white;
     text-decoration: none;
     cursor: pointer;

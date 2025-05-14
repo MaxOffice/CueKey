@@ -10,6 +10,20 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/keystyles.css">
     <link rel="icon" type="image/png" href="favicon.png">
+    <script>
+        // Detect macOS, add a classname to body and append Noto Symbols web font family,
+        // because the default macOS fonts do not support a lot of Unicode glyphs
+        if (navigator.platform.indexOf('Mac') > -1 ||
+            (navigator.userAgent.indexOf('Mac') > -1 && navigator.maxTouchPoints > 0)) {
+            document.documentElement.className += ' macos-fonts';
+
+            // Create and append the font stylesheet link
+            var link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols&family=Noto+Sans+Symbols+2&display=swap';
+            document.head.appendChild(link);
+        }
+    </script>
 </head>
 
 <body>
@@ -61,21 +75,23 @@
 
     <div class="main-content">
         <div class="input-container">
-            <textarea id="txtInput" placeholder="Click here, then press any key or key combination." autofocus></textarea>
+            <textarea id="txtInput" placeholder="Click here, then press any key or key combination."
+                autofocus></textarea>
         </div>
 
-        
+
         <div class="panel-container">
             <div id="keyPanel">
                 <div class="key-content" id="displayContent"></div>
             </div>
         </div>
 
-     
+
 
         <div class="status-bar">
             <div id="saveStatus">Ready</div>
-            <div id="gitHubLink" style="align-self: right;">v1.0.0 | <a href="https://github.com/MaxOffice/CueKey/#cuekey-v100" target="_blank">Help</a></div>
+            <div id="gitHubLink" style="align-self: right;">v1.0.0 | <a
+                    href="https://github.com/MaxOffice/CueKey/#cuekey-v100" target="_blank">Help</a></div>
             <div id="status" class="hidden">Zoom: 100%</div>
         </div>
     </div>

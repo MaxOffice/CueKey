@@ -22,7 +22,6 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    font-family: 'Segoe UI Symbol', 'Noto Sans', 'Apple Symbol', 'Arial Unicode MS', sans-serif;
 }
 
 span.key {
@@ -61,8 +60,14 @@ span.key>span {
 
     color: var(--keycap-text-color);
     text-shadow: var(--keycap-text-shadow-offset) var(--keycap-text-shadow-offset) var(--keycap-shadow-color);
+
+    font-family: 'Segoe UI Symbol', 'Noto Sans', 'Apple Symbol', 'Arial Unicode MS', sans-serif;
     font-size: large;
     text-transform: uppercase;
+}
+
+html.macos-fonts span.key>span {
+    font-family: 'Segoe UI Symbol', 'Noto Sans', 'Apple Symbol', 'Arial Unicode MS', 'Noto Sans Symbols', 'Noto Sans Symbols 2', sans-serif;
 }
 
 span.bigkey {
