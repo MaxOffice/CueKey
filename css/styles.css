@@ -236,3 +236,9 @@ img.metalogo {
 .zoom-controls input[type=text] {
     margin-right: 0.50rem;
 }
+
+.logo>img {
+    display:inline-block;
+    height:2rem;
+    margin-top:0.5rem;
+}
