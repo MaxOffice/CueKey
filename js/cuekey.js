@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const backspaceBtn = document.getElementById('backspaceBtn');
     const txtCustom = document.getElementById('txtCustom');
     const addCustomBtn = document.getElementById('addCustomBtn');
+    const copyBtn = document.getElementById('copyBtn');
 
     // Input functionality
     const keyString = (keycap, big) => {
@@ -64,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
         "NumLock": (m) => keyString("Num<br>Lock", "bigkey"),
         "PrintScreen": (m) => keyString("Prt Scr", "bigkey"),
         "ScrollLock": (m) => keyString("Srl Lck", "bigkey"),
+        "Undefined": (m) => keyString(" ", ""),
         "!": (m) => keyString("1", ""),
         "@": (m) => keyString("2", ""),
         "#": (m) => keyString("3", ""),
@@ -88,6 +90,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const isModifierKey = (keypressed) => Object.hasOwn(modifierKeyMap, keypressed);
+    const displayClassForKey = (keypressed) => keypressed.length > 9
+        ? "bigbigkey notransform"
+        : keypressed.length > 4
+            ? "bigkey notransform"
+            : "";
+
 
     /**
      * processKeys decides how modifiers and a normal
@@ -95,6 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
      * modifiers have already been processed.
      * @param {string[]} modifiers 
      * @param {string} keypressed 
+     * @returns {string} HTML that should be inserted
      */
     const processKeys = (modifiers, keypressed) => {
         // If the key just released is a modifier, check
@@ -116,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (Object.hasOwn(specialKeyMap, keypressed)) {
             normalkeys = specialKeyMap[keypressed](modifiers);
         } else {
-            normalkeys = keyString(keypressed, "")
+            normalkeys = keyString(keypressed, displayClassForKey(keypressed));
         }
         normalkeys = normalkeys.trim();
 
@@ -157,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
         displayContent.innerHTML += styledOutput;
 
         if (styledOutput != "") {
-            backspaceBtn.classList.remove('hidden');
+            enableEditUI(true);
         }
     });
 
@@ -175,16 +184,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const zoomMax = 500;
     const zoomIncrement = 50;
     const zoomDefault = 200;
-
-    let zoom = zoomDefault;
-    updateZoom();
-
-    function updateZoom () {
+    const updateZoom = () => {
         keyPanel.style.transform = `scale(${zoom / 100})`;
         keyPanel.style.transformOrigin = 'top left';
         zoomValue.textContent = `${zoom}%`;
         statusZoom.textContent = `Zoom: ${zoom}%`;
     }
+
+    let zoom = zoomDefault;
+    updateZoom();
 
     zoomIn.addEventListener('click', function () {
         zoom = Math.min(zoom + zoomIncrement, zoomMax);
@@ -201,10 +209,17 @@ document.addEventListener('DOMContentLoaded', function () {
         updateZoom();
     });
 
-    // Save button functionality
-    saveBtn.addEventListener('click', function () {
-        saveStatus.textContent = "Saving...";
+    // Copy and Save button functionality
 
+    /**
+     * processImage creates a transparent PNG image from the
+     * rendered keys using an HTML canvas, and then calls a 
+     * callback.
+     * @param {string} opstring Operation name as past tense, for status message 
+     * @param {function(HTMLCanvasElement):void} processfn Callback after successful process
+     * @returns void
+     */
+    const processImage = (opstring, processfn) => {
         // Get current zoom level to preserve in PNG
         const currentZoom = zoom / 100;
 
@@ -244,17 +259,7 @@ document.addEventListener('DOMContentLoaded', function () {
             windowWidth: document.documentElement.offsetWidth,
             windowHeight: document.documentElement.offsetHeight
         }).then(function (canvas) {
-            // Create temporary link for download
-            const link = document.createElement('a');
-            link.download = `key-capture-${zoom}pct.png`;
-
-            // Convert canvas to data URL
-            link.href = canvas.toDataURL('image/png');
-
-            // Append to body, click, and remove
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            processfn(canvas);
 
             // Remove the temporary wrapper
             document.body.removeChild(wrapper);
@@ -266,13 +271,12 @@ document.addEventListener('DOMContentLoaded', function () {
             keyPanelElem.style.transformOrigin = originalTransformOrigin;
 
             // Update status
-            saveStatus.textContent = `Saved at ${zoom}% zoom as PNG!`;
+            saveStatus.textContent = `${opstring} at ${zoom}% zoom as PNG!`;
             setTimeout(() => {
                 txtInput.focus();
-                // saveStatus.textContent = "Ready";
             }, 3000);
         }).catch(error => {
-            console.error("Error saving image:", error);
+            console.error("Error processing image:", error);
 
             // Remove the temporary wrapper
             if (document.body.contains(wrapper)) {
@@ -285,25 +289,63 @@ document.addEventListener('DOMContentLoaded', function () {
             keyPanelElem.style.overflow = originalKeyPanelOverflow;
             keyPanelElem.style.transformOrigin = originalTransformOrigin;
 
-            saveStatus.textContent = "Error saving image";
+            saveStatus.textContent = "Error processing image";
             setTimeout(() => {
                 txtInput.focus();
                 //saveStatus.textContent = "Ready";
             }, 3000);
         });
+    }
+
+    copyBtn.addEventListener('click', function () {
+        saveStatus.textContent = "Saving...";
+
+        processImage("Copied", (canvas) => {
+            canvas.toBlob(blob => {
+                navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+            }, "image/png");
+        });
     });
+
+    saveBtn.addEventListener('click', function () {
+        saveStatus.textContent = "Saving...";
+
+        processImage("Saved", function (canvas) {
+            // Create temporary link for download
+            const link = document.createElement('a');
+            link.download = `key-capture-${zoom}pct.png`;
+
+            // Convert canvas to data URL
+            link.href = canvas.toDataURL('image/png');
+
+            // Append to body, click, and remove
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+    });
+
+    // Editing UI enable/disable functionality
+    const enableEditUI = (enable) => {
+        const operation = enable && 'remove' || 'add';
+        backspaceBtn.classList[operation]('disabled');
+        clearBtn.classList[operation]('disabled');
+        copyBtn.classList[operation]('disabled');
+        saveBtn.classList[operation]('disabled');
+    }
 
     // Add meta button functionality
     addMetaBtn.addEventListener('click', function () {
         displayContent.innerHTML += processKeys(['Meta'], 'Meta');
-        backspaceBtn.classList.remove('hidden');
+        enableEditUI(true);
         txtInput.focus();
     })
 
     // Clear button functionality
     clearBtn.addEventListener('click', function () {
         displayContent.innerHTML = "";
-        backspaceBtn.classList.add('hidden');
+        enableEditUI(false);
         txtCustom.value = "Blank";
         modifierCountMap.Alt = 0;
         modifierCountMap.Control = 0;
@@ -321,7 +363,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (displayContent.childNodes.length === 0) {
-            backspaceBtn.classList.add('hidden');
+            enableEditUI(false);
         }
         txtInput.focus();
     });
@@ -339,18 +381,11 @@ document.addEventListener('DOMContentLoaded', function () {
         if (txtCustom.value === 'Blank' || txtCustom.value === '') {
             displayContent.innerHTML += keyString(' ', '');
         } else {
-            const textLength = txtCustom.value.length;
-            let sizeClass = "";
-            if (textLength > 9) {
-                sizeClass = "bigbigkey ";
-            } else if (textLength > 4) {
-                sizeClass = "bigkey "
-            }
-            sizeClass += "notransform";
-
-            displayContent.innerHTML += keyString(txtCustom.value, sizeClass);
+            let displayClass = displayClassForKey(txtCustom.value);
+            if (!displayClass) displayClass = "notransform";
+            displayContent.innerHTML += keyString(txtCustom.value, displayClass);
         }
-        backspaceBtn.classList.remove("hidden");
+        enableEditUI(true);
         txtInput.focus();
     });
 
