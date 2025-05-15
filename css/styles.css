@@ -124,7 +124,7 @@ body {
     margin-bottom: 1rem;
     min-height: 60vh;
     position: relative;
-    overflow: hidden;
+    overflow: auto;
 }
 
 #keyPanel {
