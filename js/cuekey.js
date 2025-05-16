@@ -251,13 +251,13 @@ document.addEventListener('DOMContentLoaded', function () {
         wrapper.appendChild(clonedContent);
         document.body.appendChild(wrapper);
 
-        // Use html2canvas to capture the zoomed wrapper
-        html2canvas(wrapper, {
+        // Use htmlToImage to capture the zoomed wrapper
+        htmlToImage.toCanvas(wrapper , {
             backgroundColor: null,  // Transparent background
             scale: 5,               // Not Higher quality
             logging: false,
-            windowWidth: document.documentElement.offsetWidth,
-            windowHeight: document.documentElement.offsetHeight
+            width: document.documentElement.offsetWidth,
+            height: document.documentElement.offsetHeight
         }).then(function (canvas) {
             processfn(canvas);
 
@@ -323,7 +323,6 @@ document.addEventListener('DOMContentLoaded', function () {
             link.click();
             document.body.removeChild(link);
         });
-
     });
 
     // Editing UI enable/disable functionality

@@ -55,8 +55,8 @@ span.key>span {
     border-radius: var(--keycap-curve-radius);
     border: 1px solid var(--inner-border-color);
 
-    /* background: linear-gradient(to right, var(--keycap-gradient-start), var(--keycap-gradient-end)); */
-    background: radial-gradient(circle, var(--keycap-gradient-start), var(--keycap-gradient-end));
+    background: linear-gradient(to top left, var(--keycap-gradient-start), var(--keycap-gradient-end));
+    /* background: radial-gradient(circle, var(--keycap-gradient-start), var(--keycap-gradient-end)); */
 
     color: var(--keycap-text-color);
     text-shadow: var(--keycap-text-shadow-offset) var(--keycap-text-shadow-offset) var(--keycap-shadow-color);
