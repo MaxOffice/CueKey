@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const addMetaBtn = document.getElementById('addMetaBtn');
     const clearBtn = document.getElementById('clearBtn');
     const backspaceBtn = document.getElementById('backspaceBtn');
+    const addFnBtn = document.getElementById('addFnBtn');
     const txtCustom = document.getElementById('txtCustom');
     const addCustomBtn = document.getElementById('addCustomBtn');
     const copyBtn = document.getElementById('copyBtn');
@@ -27,10 +28,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const eatKey = (modifiers) => "";
 
     const modifierKeyMap = {
-        "Meta": () => keyString("<img class='keylogo' src='images/WindowsLogo-2012.svg'>", "bigkey"),
+        "Meta": () => keyString(
+            "<img class='keylogo windowsonly linuxonly' src='images/WindowsLogo-2012.svg'><span class='maconly'>Command ⌘</span>",
+            "bigkey macbigbigkey"
+        ),
         "Shift": () => keyString("Shift    ⇧", "bigbigkey"),
         "Control": () => keyString("Ctrl", "bigkey"),
-        "Alt": () => keyString("Alt", "bigkey"),
+        "Alt": () => keyString(
+            "<span class='windowsonly linuxonly'>Alt</span><span class='maconly'>Option ⌥</span>",
+             "bigkey macbigbigkey"
+        ),
     }
 
     const modifierCountMap = {
@@ -184,15 +191,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const zoomMax = 500;
     const zoomIncrement = 50;
     const zoomDefault = 200;
+
     const updateZoom = () => {
         keyPanel.style.transform = `scale(${zoom / 100})`;
         keyPanel.style.transformOrigin = 'top left';
         zoomValue.textContent = `${zoom}%`;
         statusZoom.textContent = `Zoom: ${zoom}%`;
     }
-
-    let zoom = zoomDefault;
-    updateZoom();
 
     zoomIn.addEventListener('click', function () {
         zoom = Math.min(zoom + zoomIncrement, zoomMax);
@@ -208,6 +213,9 @@ document.addEventListener('DOMContentLoaded', function () {
         zoom = zoomDefault;
         updateZoom();
     });
+
+    let zoom = zoomDefault;
+    updateZoom();
 
     // Copy and Save button functionality
 
@@ -252,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.appendChild(wrapper);
 
         // Use htmlToImage to capture the zoomed wrapper
-        htmlToImage.toCanvas(wrapper , {
+        htmlToImage.toCanvas(wrapper, {
             backgroundColor: null,  // Transparent background
             scale: 5,               // Not Higher quality
             logging: false,
@@ -294,7 +302,6 @@ document.addEventListener('DOMContentLoaded', function () {
             saveStatus.textContent = "Error processing image";
             setTimeout(() => {
                 txtInput.focus();
-                //saveStatus.textContent = "Ready";
             }, 3000);
         });
     }
@@ -336,6 +343,8 @@ document.addEventListener('DOMContentLoaded', function () {
         saveBtn.classList[operation]('disabled');
     }
 
+    // Insert buttons functionality
+
     // Add meta button functionality
     addMetaBtn.addEventListener('click', function () {
         displayContent.innerHTML += processKeys(['Meta'], 'Meta');
@@ -343,29 +352,10 @@ document.addEventListener('DOMContentLoaded', function () {
         txtInput.focus();
     })
 
-    // Clear button functionality
-    clearBtn.addEventListener('click', function () {
-        displayContent.innerHTML = "";
-        enableEditUI(false);
-        txtCustom.value = "Blank";
-        modifierCountMap.Alt = 0;
-        modifierCountMap.Control = 0;
-        modifierCountMap.Shift = 0;
-        modifierCountMap.Meta = 0;
-        txtInput.textContent = "";
-        txtInput.focus();
-    });
-
-    // Backspace button functionality
-    backspaceBtn.addEventListener('click', function () {
-        const lastElement = displayContent.querySelector('span.key:last-child');
-        if (lastElement) {
-            displayContent.removeChild(lastElement);
-        }
-
-        if (displayContent.childNodes.length === 0) {
-            enableEditUI(false);
-        }
+    // Add fn button functionality
+    addFnBtn.addEventListener('click', function() {
+        displayContent.innerHTML += keyString('<span class="windowsonly linuxonly">fn</span><span class="maconly">fn &#x1F310;&#xfe0e;</span>','notransform macbigkey');
+        enableEditUI(true);
         txtInput.focus();
     });
 
@@ -390,6 +380,32 @@ document.addEventListener('DOMContentLoaded', function () {
         txtInput.focus();
     });
 
+    // Clear button functionality
+    clearBtn.addEventListener('click', function () {
+        displayContent.innerHTML = "";
+        enableEditUI(false);
+        txtCustom.value = "";
+        modifierCountMap.Alt = 0;
+        modifierCountMap.Control = 0;
+        modifierCountMap.Shift = 0;
+        modifierCountMap.Meta = 0;
+        txtInput.textContent = "";
+        txtInput.focus();
+    });
+
+    // Backspace button functionality
+    backspaceBtn.addEventListener('click', function () {
+        const lastElement = displayContent.querySelector('span.key:last-child');
+        if (lastElement) {
+            displayContent.removeChild(lastElement);
+        }
+
+        if (displayContent.childNodes.length === 0) {
+            enableEditUI(false);
+        }
+        txtInput.focus();
+    });
+
     // Settings functionality
 
     // Settings button functionality
@@ -402,19 +418,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Settings dialog functionality
     const osTypeChanged = (e) => {
-
+        document.body.setAttribute('data-os', e.target.value)
     }
 
     const keyTypeChanged = (e) => {
         const keytype = document.querySelector('dialog input[name="keytype"]:checked').value
-        if(keytype === 'chiclet') {
+        if (keytype === 'chiclet') {
             document.body.classList.add('chiclet');
         } else {
             document.body.classList.remove('chiclet')
         }
     }
 
-    document.querySelectorAll('dialog input[name="keytype"]').forEach( 
+    document.querySelectorAll('dialog input[name="ostype"]').forEach(
+        item => item.addEventListener('click', osTypeChanged)
+    );
+
+    document.querySelectorAll('dialog input[name="keytype"]').forEach(
         item => item.addEventListener('click', keyTypeChanged)
     );
+
+    // Set initial values of settings
+    if ((navigator.userAgent.indexOf('Mac ') > -1)) {
+        document.getElementById('rbMac').checked = true;
+        document.body.setAttribute('data-os','mac');
+    }
+    else if(navigator.userAgent.indexOf('Linux ') > -1) {
+        document.getElementById('rbLinux').checked = true;
+        document.body.setAttribute('data-os','linux');
+    }
 });

@@ -67,8 +67,8 @@ span.key>span {
     text-transform: uppercase;
 }
 
-html.macos-fonts span.key>span {
-    font-family: 'Segoe UI Symbol', 'Noto Sans', 'Apple Symbol', 'Arial Unicode MS', 'Noto Sans Symbols', 'Noto Sans Symbols 2', sans-serif;
+html.macos-fonts span.key span {
+    font-family: 'Noto Sans Symbols', 'Noto Sans Symbols 2', sans-serif;
 }
 
 span.bigkey {
@@ -170,4 +170,42 @@ body.chiclet span.key>span:has(>br) {
 
 body.chiclet span.key>span>br {
     display: none;
+}
+
+/* OS-Specific stuff */
+.maconly {
+    display: none;
+}
+
+body[data-os="mac"] span.maconly, body[data-os="mac"] svg.maconly {
+    display: inline;
+}
+
+body[data-os="mac"] .windowsonly, body[data-os="mac"] .linuxonly {
+    display: none;
+}
+
+body[data-os="mac"] span.macbigkey {
+    width: calc(1.25*var(--keyheight));
+}
+
+body[data-os="mac"] span.macbigkey>span {
+    width: var(--keycap-top-size);
+    text-transform: none;
+}
+
+body[data-os="mac"] span.macbigbigkey {
+    width: calc(2.25*var(--keyheight));
+    padding: var(--keycap-bigbig-padding);
+
+    border-radius: var(--keycap-bigbig-curve-radius);
+}
+
+body[data-os="mac"] span.macbigbigkey>span {
+    width: 95%;
+    height: 95%;
+
+    border-radius: var(--keycap-bigbig-curve-radius);
+
+    text-transform: none;
 }

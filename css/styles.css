@@ -109,6 +109,10 @@ button.btn>svg, button.btn>img {
     white-space: nowrap;
 }
 
+.zoom-controls .btn {
+    margin-left: 0.5rem;
+}
+
 #chkWinKey {
     margin-left: 0.5rem;
     position: relative;
@@ -289,6 +293,10 @@ dialog .topPanel>button {
     height: 1.5rem;
     border: transparent;
     background: transparent;
+}
+
+html.macos-fonts dialog .topPanel>button {
+    font-family: 'Noto Sans Symbols', 'Noto Sans Symbols 2', sans-serif;
 }
 
 dialog fieldset {
