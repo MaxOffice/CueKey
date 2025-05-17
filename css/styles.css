@@ -1,12 +1,21 @@
 :root {
-    /* --primary-color: #3498db; */
-    --primary-color: #c1e5f5;
     --background-color: #f5f5f5;
-    --panel-bg: #ffffff;
     --text-color: #333333;
-    /* --btn-hover: #2980b9; */
-    --btn-hover: #fbe3d6;
-    --btn-text-color: #333333;
+
+    --btn-background: #3498db;
+    --btn-hover: #2980b9;
+    --btn-text-color: white;
+    /* --btn-background: #c1e5f5; */
+    /* --btn-hover: #fbe3d6; */
+    /* --btn-text-color: #333333; */
+
+    --btn-disabled-background: #999999;
+    --btn-disabled-text-color: #333333;
+
+    --panel-bg: #ffffff;
+
+    --toolbar-background: #333;
+    --toolbar-text-color: white;
 }
 
 * {
@@ -19,14 +28,17 @@
 body {
     background-color: var(--background-color);
     color: var(--text-color);
-    min-height: 100vh;
+    min-width: 1200px;
+    min-height: 620px;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
 .toolbar {
-    background-color: #333;
-    color: white;
+    background-color: var(--toolbar-background);
+    color: var(--toolbar-text-color);
     padding: 0.5rem 1rem;
     display: flex;
     justify-content: space-between;
@@ -47,7 +59,7 @@ body {
 }
 
 .btn {
-    background-color: var(--primary-color);
+    background-color: var(--btn-background);
     color: var(--btn-text-color);
     border: none;
     padding: 0.5rem 1rem;
@@ -72,14 +84,14 @@ button.btn>img {
     height: 20px;
 }
 
-.btn-settings {
+/* .btn-settings {
     background-color: transparent;
     color: white;
 }
 
 .btn-settings:hover {
     background-color: rgba(255, 255, 255, 0.1);
-}
+} */
 
 .zoom-controls {
     display: flex;
@@ -182,8 +194,8 @@ button.btn>img {
     display: flex;
     justify-content: space-between;
     padding: 0.5rem;
-    background-color: #333;
-    color: #ccc;
+    background-color: var(--toolbar-background);
+    color: var(--toolbar-text-color);
     font-size: 0.8rem;
     border-radius: 4px;
     margin-top: 0.5rem;
@@ -239,8 +251,8 @@ img.metalogo {
 }
 
 .disabled {
-    background-color: #999999;
-    color: #333333;
+    background-color: var(--btn-disabled-background);
+    color: var(--btn-disabled-text-color);
     pointer-events: none;
 }
 
@@ -250,7 +262,7 @@ img.metalogo {
 
 .status-bar a,
 .status-bar a:visited {
-    color: white;
+    color: var(--toolbar-text-color);
     text-decoration: none;
     cursor: pointer;
 }
@@ -276,18 +288,20 @@ dialog {
 }
 
 dialog div.topPanel {
-    /* margin-right: -0.5rem; */
-    margin: 0.05rem -0.45rem;
+    margin: 0.05rem -0.5rem 0 -0.5rem;
     padding: 0 0 0.25rem 0.25rem;
+
     display: flex;
     flex-direction: row;
-    align-items: baseline;
+    align-items: center;
 
+    background-color: var(--toolbar-background);
 }
 
 dialog .topPanel>span {
     flex: 1;
     font-weight: bold;
+    color: var(--toolbar-text-color);
 }
 
 dialog .topPanel>button {
@@ -295,6 +309,7 @@ dialog .topPanel>button {
     height: 1.5rem;
     border: transparent;
     background: transparent;
+    color: var(--toolbar-text-color);
 }
 
 html.macos-fonts dialog .topPanel>button {
@@ -304,6 +319,10 @@ html.macos-fonts dialog .topPanel>button {
 dialog fieldset {
     padding: 0.25rem;
     margin-top: 0.5rem;
+}
+
+dialog fieldset legend {
+    font-weight: 600;
 }
 
 dialog fieldset input[type="radio"] {

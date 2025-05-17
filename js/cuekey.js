@@ -431,7 +431,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const choiceImageClicked = (e) => {
         const parentDiv = e.target.parentNode;
         const rb = parentDiv?.querySelector('input[type="radio"]');
-        if(rb) rb.click();
+        if (rb) rb.click();
     }
 
     // Handle OS type Change
