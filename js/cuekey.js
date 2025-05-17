@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
         "Control": () => keyString("Ctrl", "bigkey"),
         "Alt": () => keyString(
             "<span class='windowsonly linuxonly'>Alt</span><span class='maconly'>Option ⌥</span>",
-             "bigkey macbigbigkey"
+            "bigkey macbigbigkey"
         ),
     }
 
@@ -353,8 +353,8 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     // Add fn button functionality
-    addFnBtn.addEventListener('click', function() {
-        displayContent.innerHTML += keyString('<span class="windowsonly linuxonly">fn</span><span class="maconly">fn &#x1F310;&#xfe0e;</span>','notransform macbigkey');
+    addFnBtn.addEventListener('click', function () {
+        displayContent.innerHTML += keyString('<span class="windowsonly linuxonly">fn</span><span class="maconly">fn &#x1F310;&#xfe0e;</span>', 'notransform macbigkey');
         enableEditUI(true);
         txtInput.focus();
     });
@@ -410,8 +410,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Settings button functionality
     settingsBtn.addEventListener('click', function () {
-        //alert('Settings panel would open here');
-        //document.body.classList.toggle('chiclet');
         const settingDialog = document.getElementById('settingDialog');
         settingDialog.showModal();
     });
@@ -430,21 +428,37 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    const choiceImageClicked = (e) => {
+        const parentDiv = e.target.parentNode;
+        const rb = parentDiv?.querySelector('input[type="radio"]');
+        if(rb) rb.click();
+    }
+
+    // Handle OS type Change
     document.querySelectorAll('dialog input[name="ostype"]').forEach(
         item => item.addEventListener('click', osTypeChanged)
     );
 
+    // Handle key type change 
     document.querySelectorAll('dialog input[name="keytype"]').forEach(
         item => item.addEventListener('click', keyTypeChanged)
+    );
+
+    // Make radio button images clickable
+    document.querySelectorAll('dialog fieldset div>img').forEach(
+        item => item.addEventListener('click', choiceImageClicked)
     );
 
     // Set initial values of settings
     if ((navigator.userAgent.indexOf('Mac ') > -1)) {
         document.getElementById('rbMac').checked = true;
-        document.body.setAttribute('data-os','mac');
+        document.body.setAttribute('data-os', 'mac');
     }
-    else if(navigator.userAgent.indexOf('Linux ') > -1) {
+    else if (navigator.userAgent.indexOf('Linux ') > -1) {
         document.getElementById('rbLinux').checked = true;
-        document.body.setAttribute('data-os','linux');
+        document.body.setAttribute('data-os', 'linux');
+    } else {
+        document.getElementById('rbWindows').checked = true;
+        document.body.setAttribute('data-os', 'windows');
     }
 });

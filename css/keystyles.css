@@ -173,16 +173,20 @@ body.chiclet span.key>span>br {
 }
 
 /* OS-Specific stuff */
-.maconly {
+.windowsonly, .maconly, .linuxonly  {
     display: none;
 }
 
-body[data-os="mac"] span.maconly, body[data-os="mac"] svg.maconly {
-    display: inline;
+body[data-os="windows"] .windowsonly {
+    display: unset;
 }
 
-body[data-os="mac"] .windowsonly, body[data-os="mac"] .linuxonly {
-    display: none;
+body[data-os="mac"] .maconly {
+    display: unset;
+}
+
+body[data-os="linux"] .linuxonly {
+    display: unset;
 }
 
 body[data-os="mac"] span.macbigkey {

@@ -66,7 +66,8 @@ body {
     background-color: var(--btn-hover);
 }
 
-button.btn>svg, button.btn>img {
+button.btn>svg,
+button.btn>img {
     width: 20px;
     height: 20px;
 }
@@ -127,6 +128,7 @@ button.btn>svg, button.btn>img {
 #zoomValue {
     width: 3rem;
 }
+
 .main-content {
     display: flex;
     flex-direction: column;
@@ -262,9 +264,9 @@ img.metalogo {
 }
 
 .logo>img {
-    display:inline-block;
-    height:2rem;
-    margin-top:0.5rem;
+    display: inline-block;
+    height: 2rem;
+    margin-top: 0.5rem;
 }
 
 dialog {
@@ -280,11 +282,11 @@ dialog div.topPanel {
     display: flex;
     flex-direction: row;
     align-items: baseline;
-    
+
 }
 
 dialog .topPanel>span {
-    flex:1;
+    flex: 1;
     font-weight: bold;
 }
 
@@ -306,4 +308,18 @@ dialog fieldset {
 
 dialog fieldset input[type="radio"] {
     margin-right: 0.5rem;
+}
+
+dialog fieldset div {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+dialog fieldset div label {
+    flex: 1;
+}
+
+dialog fieldset div img {
+    flex-basis: 100%;
 }
