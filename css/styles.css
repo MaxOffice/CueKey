@@ -29,9 +29,7 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
     min-width: 1200px;
-    min-height: 620px;
-    width: 100vw;
-    height: 100vh;
+    min-height: 600px;
     display: flex;
     flex-direction: column;
 }
@@ -83,15 +81,6 @@ button.btn>img {
     width: 20px;
     height: 20px;
 }
-
-/* .btn-settings {
-    background-color: transparent;
-    color: white;
-}
-
-.btn-settings:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-} */
 
 .zoom-controls {
     display: flex;
@@ -201,44 +190,6 @@ button.btn>img {
     margin-top: 0.5rem;
 }
 
-/* Responsive design */
-/*
-@media (max-width: 768px) {
-    .tools {
-        gap: 0.5rem;
-    }
-
-    .zoom-level {
-        display: none;
-    }
-
-    .panel-container {
-        min-height: 40vh;
-    }
-
-    #keyPanel {
-        padding: 1rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .toolbar {
-        flex-direction: column;
-        padding: 0.5rem;
-        gap: 0.5rem;
-    }
-
-    .zoom-controls {
-        margin-left: auto;
-    }
-
-    .status-bar {
-        flex-direction: column;
-        gap: 0.3rem;
-    }
-}
-*/
-
 .key-content {
     line-height: 1.5;
     white-space: pre-wrap;
@@ -288,7 +239,7 @@ dialog {
 }
 
 dialog div.topPanel {
-    margin: 0.05rem -0.5rem 0 -0.5rem;
+    margin: -0.05rem -0.5rem 0 -0.5rem;
     padding: 0 0 0.25rem 0.25rem;
 
     display: flex;
