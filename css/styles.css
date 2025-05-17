@@ -262,3 +262,40 @@ img.metalogo {
     height:2rem;
     margin-top:0.5rem;
 }
+
+dialog {
+    margin: auto;
+    padding: 0 0.5rem 0.5rem;
+    width: 20rem;
+}
+
+dialog div.topPanel {
+    /* margin-right: -0.5rem; */
+    margin: 0.05rem -0.45rem;
+    padding: 0 0 0.25rem 0.25rem;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    
+}
+
+dialog .topPanel>span {
+    flex:1;
+    font-weight: bold;
+}
+
+dialog .topPanel>button {
+    width: 1.5rem;
+    height: 1.5rem;
+    border: transparent;
+    background: transparent;
+}
+
+dialog fieldset {
+    padding: 0.25rem;
+    margin-top: 0.5rem;
+}
+
+dialog fieldset input[type="radio"] {
+    margin-right: 0.5rem;
+}

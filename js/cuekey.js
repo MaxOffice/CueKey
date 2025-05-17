@@ -19,8 +19,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const copyBtn = document.getElementById('copyBtn');
 
     // Input functionality
-    const keyString = (keycap, big) => {
-        const classString = `key${big != "" ? ` ${big}` : ""}`;
+    const keyString = (keycap, keyclasses) => {
+        const classString = `key${keyclasses != "" ? ` ${keyclasses}` : ""}`;
         return `<span class="${classString}"><span>${keycap}</span></span>`;
     }
 
@@ -256,8 +256,10 @@ document.addEventListener('DOMContentLoaded', function () {
             backgroundColor: null,  // Transparent background
             scale: 5,               // Not Higher quality
             logging: false,
-            width: document.documentElement.offsetWidth,
-            height: document.documentElement.offsetHeight
+            // width: document.documentElement.offsetWidth,
+            // height: document.documentElement.offsetHeight
+            width: displayContent.getBoundingClientRect().width,
+            height: displayContent.getBoundingClientRect().height
         }).then(function (canvas) {
             processfn(canvas);
 
@@ -388,8 +390,31 @@ document.addEventListener('DOMContentLoaded', function () {
         txtInput.focus();
     });
 
+    // Settings functionality
+
     // Settings button functionality
     settingsBtn.addEventListener('click', function () {
-        alert('Settings panel would open here');
+        //alert('Settings panel would open here');
+        //document.body.classList.toggle('chiclet');
+        const settingDialog = document.getElementById('settingDialog');
+        settingDialog.showModal();
     });
+
+    // Settings dialog functionality
+    const osTypeChanged = (e) => {
+
+    }
+
+    const keyTypeChanged = (e) => {
+        const keytype = document.querySelector('dialog input[name="keytype"]:checked').value
+        if(keytype === 'chiclet') {
+            document.body.classList.add('chiclet');
+        } else {
+            document.body.classList.remove('chiclet')
+        }
+    }
+
+    document.querySelectorAll('dialog input[name="keytype"]').forEach( 
+        item => item.addEventListener('click', keyTypeChanged)
+    );
 });

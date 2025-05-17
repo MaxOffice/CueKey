@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CueKey</title>
     <!-- Add html-to-image library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.13/html-to-image.min.js" integrity="sha512-iZ2ORl595Wx6miw+GuadDet4WQbdSWS3JLMoNfY8cRGoEFy6oT3G9IbcrBeL6AfkgpA51ETt/faX6yLV+/gFJg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.13/html-to-image.min.js"
+        integrity="sha512-iZ2ORl595Wx6miw+GuadDet4WQbdSWS3JLMoNfY8cRGoEFy6oT3G9IbcrBeL6AfkgpA51ETt/faX6yLV+/gFJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/keystyles.css">
     <link rel="icon" type="image/png" href="favicon.png">
@@ -92,7 +94,7 @@
                 </svg>
             </button>
 
-            <button class="btn btn-settings hidden" id="settingsBtn">
+            <button class="btn" id="settingsBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                     <path
                         d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
@@ -123,6 +125,44 @@
             <div id="status" class="hidden">Zoom: 100%</div>
         </div>
     </div>
+
+    <dialog id="settingDialog" >
+        <form id method="dialog">
+            <div class="topPanel">
+                <span>Settings</span></spanl><button id="settingsCloseButton">🗙</button>
+            </div>
+            <div class="mainPanel">
+                <fieldset>
+                    <legend>OS type:</legend>
+
+                    <div>
+                        <input type="radio" id="rbWindows" name="ostype" value="windows" checked><label>Windows</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="rbMac" name="ostype" value="mac"><label>macOS</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="rbLinux" name="ostype" value="linux"><label>Linux</label>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Key type:</legend>
+
+                    <div>
+                        <input type="radio" id="rbMechanical" name="keytype" value="mechanical" checked>
+                        <label for="rbMechanical">Mechanical</label>
+                        <img src="images/mechanical.png">
+                    </div>
+                    <div>
+                        <input type="radio" id="rbChiclet" name="keytype" value="chiclet">
+                        <label for="rbChiclet">Chiclet</label>
+                        <img src="images/chiclet.png">
+                    </div>
+                </fieldset>
+            </div>
+        </form>
+    </dialog>
 
     <script src="js/cuekey.js"></script>
 </body>
