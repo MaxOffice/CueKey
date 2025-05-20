@@ -10,8 +10,8 @@
     --keycap-padding: 0.1rem 0.5rem 0.5rem 0.1rem;
     --keycap-bigbig-padding: 0.3rem 0.5rem 0.5rem 0.3rem;
 
-    --keycap-curve-radius: 15%;
-    --keycap-bigbig-curve-radius: 10%;
+    --keycap-curve-radius: 5px;
+    --keycap-bigbig-curve-radius: 5px;
 
     --keycap-top-size: 85%;
 
