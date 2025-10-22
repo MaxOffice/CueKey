@@ -495,6 +495,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return '#000000';
     }
 
+    const getCurrentGradientColors = () => {
     const normalizeAngleValue = (angleString) => {
         if (angleString == null) {
             return 0;
@@ -532,6 +533,18 @@ document.addEventListener('DOMContentLoaded', function () {
         return {
             start: normalizeColorValue(computed.getPropertyValue('--keycap-gradient-start')),
             end: normalizeColorValue(computed.getPropertyValue('--keycap-gradient-end')),
+        };
+    }
+
+    const updateGradientPreview = (startColor, endColor) => {
+        if (!gradientPreview) return;
+        gradientPreview.style.background = `linear-gradient(90deg, ${startColor}, ${endColor})`;
+    }
+
+    const storeGradient = (startColor, endColor) => {
+        try {
+            localStorage.setItem(GRADIENT_START_STORAGE_KEY, startColor);
+            localStorage.setItem(GRADIENT_END_STORAGE_KEY, endColor);
             angle: normalizeAngleValue(computed.getPropertyValue('--keycap-gradient-angle')),
         };
     }
@@ -568,6 +581,8 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const start = localStorage.getItem(GRADIENT_START_STORAGE_KEY);
             const end = localStorage.getItem(GRADIENT_END_STORAGE_KEY);
+            if (start && end) {
+                return { start, end };
             const angle = localStorage.getItem(GRADIENT_ANGLE_STORAGE_KEY);
             if (start && end) {
                 return {
@@ -582,6 +597,29 @@ document.addEventListener('DOMContentLoaded', function () {
         return null;
     }
 
+    const applyGradient = (startColor, endColor, persist = true) => {
+        document.documentElement.style.setProperty('--keycap-gradient-start', startColor);
+        document.documentElement.style.setProperty('--keycap-gradient-end', endColor);
+        updateGradientPreview(startColor, endColor);
+        if (persist) {
+            storeGradient(startColor, endColor);
+        }
+    }
+
+    const storedGradient = loadStoredGradient();
+    if (storedGradient) {
+        applyGradient(storedGradient.start, storedGradient.end, false);
+    } else {
+        const currentGradient = getCurrentGradientColors();
+        updateGradientPreview(currentGradient.start, currentGradient.end);
+    }
+
+    if (gradientBtn && gradientDialog && gradientStartInput && gradientEndInput) {
+        const syncInputsToCurrent = () => {
+            const { start, end } = getCurrentGradientColors();
+            gradientStartInput.value = start;
+            gradientEndInput.value = end;
+            updateGradientPreview(start, end);
     const applyGradient = (startColor, endColor, angle = DEFAULT_GRADIENT.angle, persist = true) => {
         const normalizedAngle = toAngleNumber(angle);
         document.documentElement.style.setProperty('--keycap-gradient-start', startColor);
@@ -618,12 +656,20 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         const handleColorInput = () => {
+            updateGradientPreview(gradientStartInput.value, gradientEndInput.value);
             updateGradientPreview(gradientStartInput.value, gradientEndInput.value, gradientAngleInput.value);
         }
 
         gradientStartInput.addEventListener('input', handleColorInput);
         gradientEndInput.addEventListener('input', handleColorInput);
 
+        gradientDialog.addEventListener('close', () => {
+            if (gradientDialog.returnValue === 'apply') {
+                applyGradient(gradientStartInput.value, gradientEndInput.value);
+            } else {
+                // Reset preview to the active gradient if dialog dismissed
+                const { start, end } = getCurrentGradientColors();
+                updateGradientPreview(start, end);
         gradientAngleInput.addEventListener('input', () => {
             updateAngleDisplay(gradientAngleInput.value);
             handleColorInput();
