@@ -4,6 +4,7 @@
     --inner-border-color: #646464;
     --keycap-gradient-start: #646464;
     --keycap-gradient-end: #000;
+    --keycap-gradient-angle: 135deg;
     --keycap-text-color: white;
     --keycap-shadow-color: rgba(0,0,0,0.75);
 
@@ -40,7 +41,7 @@ span.key {
 
     border-radius: var(--keycap-curve-radius);
 
-    background: linear-gradient(to bottom right, var(--keycap-gradient-start), var(--keycap-gradient-end));
+    background: linear-gradient(var(--keycap-gradient-angle), var(--keycap-gradient-start), var(--keycap-gradient-end));
 }
 
 span.key>span {
@@ -56,7 +57,7 @@ span.key>span {
     border-radius: var(--keycap-curve-radius);
     border: 1px solid var(--inner-border-color);
 
-    background: linear-gradient(to top left, var(--keycap-gradient-start), var(--keycap-gradient-end));
+    background: linear-gradient(calc(var(--keycap-gradient-angle) + 180deg), var(--keycap-gradient-start), var(--keycap-gradient-end));
     /* background: radial-gradient(circle, var(--keycap-gradient-start), var(--keycap-gradient-end)); */
 
     color: var(--keycap-text-color);
