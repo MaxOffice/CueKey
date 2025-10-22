@@ -620,7 +620,8 @@ document.addEventListener('DOMContentLoaded', function () {
             gradientStartInput.value = start;
             gradientEndInput.value = end;
             updateGradientPreview(start, end);
-    const applyGradient = (startColor, endColor, angle = DEFAULT_GRADIENT.angle, persist = true) => {
+          
+        const applyGradient = (startColor, endColor, angle = DEFAULT_GRADIENT.angle, persist = true) => {
         const normalizedAngle = toAngleNumber(angle);
         document.documentElement.style.setProperty('--keycap-gradient-start', startColor);
         document.documentElement.style.setProperty('--keycap-gradient-end', endColor);
@@ -670,6 +671,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Reset preview to the active gradient if dialog dismissed
                 const { start, end } = getCurrentGradientColors();
                 updateGradientPreview(start, end);
+              
         gradientAngleInput.addEventListener('input', () => {
             updateAngleDisplay(gradientAngleInput.value);
             handleColorInput();
