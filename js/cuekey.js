@@ -18,6 +18,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const txtCustom = document.getElementById('txtCustom');
     const addCustomBtn = document.getElementById('addCustomBtn');
     const copyBtn = document.getElementById('copyBtn');
+    const gradientBtn = document.getElementById('gradientBtn');
+    const gradientDialog = document.getElementById('gradientDialog');
+    const gradientStartInput = document.getElementById('gradientStart');
+    const gradientEndInput = document.getElementById('gradientEnd');
+    const gradientPreview = document.getElementById('gradientPreview');
 
     // Input functionality
     const keyString = (keycap, keyclasses) => {
@@ -460,5 +465,112 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
         document.getElementById('rbWindows').checked = true;
         document.body.setAttribute('data-os', 'windows');
+    }
+
+    // Gradient settings functionality
+    const GRADIENT_START_STORAGE_KEY = 'cuekeyGradientStart';
+    const GRADIENT_END_STORAGE_KEY = 'cuekeyGradientEnd';
+
+    const normalizeColorValue = (colorString) => {
+        if (!colorString) return '#000000';
+        const trimmed = colorString.trim();
+        if (trimmed.startsWith('#')) {
+            if (trimmed.length === 4) {
+                const [, r, g, b] = trimmed;
+                return `#${r}${r}${g}${g}${b}${b}`.toLowerCase();
+            }
+            return trimmed.toLowerCase();
+        }
+
+        const rgbMatch = trimmed.match(/^rgba?\((\d+)[,\s]+(\d+)[,\s]+(\d+)/i);
+        if (rgbMatch) {
+            const toHex = (value) => parseInt(value, 10).toString(16).padStart(2, '0');
+            return `#${toHex(rgbMatch[1])}${toHex(rgbMatch[2])}${toHex(rgbMatch[3])}`.toLowerCase();
+        }
+
+        return '#000000';
+    }
+
+    const getCurrentGradientColors = () => {
+        const computed = getComputedStyle(document.documentElement);
+        return {
+            start: normalizeColorValue(computed.getPropertyValue('--keycap-gradient-start')),
+            end: normalizeColorValue(computed.getPropertyValue('--keycap-gradient-end')),
+        };
+    }
+
+    const updateGradientPreview = (startColor, endColor) => {
+        if (!gradientPreview) return;
+        gradientPreview.style.background = `linear-gradient(90deg, ${startColor}, ${endColor})`;
+    }
+
+    const storeGradient = (startColor, endColor) => {
+        try {
+            localStorage.setItem(GRADIENT_START_STORAGE_KEY, startColor);
+            localStorage.setItem(GRADIENT_END_STORAGE_KEY, endColor);
+        } catch (error) {
+            console.warn('Unable to store gradient preferences.', error);
+        }
+    }
+
+    const loadStoredGradient = () => {
+        try {
+            const start = localStorage.getItem(GRADIENT_START_STORAGE_KEY);
+            const end = localStorage.getItem(GRADIENT_END_STORAGE_KEY);
+            if (start && end) {
+                return { start, end };
+            }
+        } catch (error) {
+            console.warn('Unable to load gradient preferences.', error);
+        }
+        return null;
+    }
+
+    const applyGradient = (startColor, endColor, persist = true) => {
+        document.documentElement.style.setProperty('--keycap-gradient-start', startColor);
+        document.documentElement.style.setProperty('--keycap-gradient-end', endColor);
+        updateGradientPreview(startColor, endColor);
+        if (persist) {
+            storeGradient(startColor, endColor);
+        }
+    }
+
+    const storedGradient = loadStoredGradient();
+    if (storedGradient) {
+        applyGradient(storedGradient.start, storedGradient.end, false);
+    } else {
+        const currentGradient = getCurrentGradientColors();
+        updateGradientPreview(currentGradient.start, currentGradient.end);
+    }
+
+    if (gradientBtn && gradientDialog && gradientStartInput && gradientEndInput) {
+        const syncInputsToCurrent = () => {
+            const { start, end } = getCurrentGradientColors();
+            gradientStartInput.value = start;
+            gradientEndInput.value = end;
+            updateGradientPreview(start, end);
+        }
+
+        gradientBtn.addEventListener('click', () => {
+            syncInputsToCurrent();
+            gradientDialog.showModal();
+        });
+
+        const handleColorInput = () => {
+            updateGradientPreview(gradientStartInput.value, gradientEndInput.value);
+        }
+
+        gradientStartInput.addEventListener('input', handleColorInput);
+        gradientEndInput.addEventListener('input', handleColorInput);
+
+        gradientDialog.addEventListener('close', () => {
+            if (gradientDialog.returnValue === 'apply') {
+                applyGradient(gradientStartInput.value, gradientEndInput.value);
+            } else {
+                // Reset preview to the active gradient if dialog dismissed
+                const { start, end } = getCurrentGradientColors();
+                updateGradientPreview(start, end);
+            }
+        });
     }
 });
