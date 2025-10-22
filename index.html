@@ -206,12 +206,20 @@
                     <label for="gradientEnd">End color</label>
                     <input type="color" id="gradientEnd" name="gradientEnd">
                 </div>
+                <div class="angle-row">
+                    <label for="gradientAngle">Angle</label>
+                    <div class="angle-input">
+                        <input type="range" id="gradientAngle" name="gradientAngle" min="0" max="359" step="1">
+                        <span id="gradientAngleValue" aria-live="polite">0°</span>
+                    </div>
+                </div>
                 <div class="preview-row">
                     <span>Preview</span>
                     <div id="gradientPreview"></div>
                 </div>
             </div>
             <menu>
+                <button type="button" id="gradientResetButton" class="btn secondary">Reset</button>
                 <button type="submit" value="cancel" class="btn secondary">Cancel</button>
                 <button type="submit" value="apply" class="btn">Apply</button>
             </menu>
