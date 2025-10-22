@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const zoomMin = 50;
     const zoomMax = 500;
     const zoomIncrement = 50;
-    const zoomDefault = 200;
+    const zoomDefault = 500;
 
     const updateZoom = () => {
         keyPanel.style.transform = `scale(${zoom / 100})`;
