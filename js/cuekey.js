@@ -18,6 +18,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const txtCustom = document.getElementById('txtCustom');
     const addCustomBtn = document.getElementById('addCustomBtn');
     const copyBtn = document.getElementById('copyBtn');
+    const gradientBtn = document.getElementById('gradientBtn');
+    const gradientDialog = document.getElementById('gradientDialog');
+    const gradientStartInput = document.getElementById('gradientStart');
+    const gradientEndInput = document.getElementById('gradientEnd');
+    const gradientPreview = document.getElementById('gradientPreview');
+    const gradientAngleInput = document.getElementById('gradientAngle');
+    const gradientAngleValue = document.getElementById('gradientAngleValue');
+    const gradientResetButton = document.getElementById('gradientResetButton');
 
     // Input functionality
     const keyString = (keycap, keyclasses) => {
@@ -460,5 +468,184 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
         document.getElementById('rbWindows').checked = true;
         document.body.setAttribute('data-os', 'windows');
+    }
+
+    // Gradient settings functionality
+    const GRADIENT_START_STORAGE_KEY = 'cuekeyGradientStart';
+    const GRADIENT_END_STORAGE_KEY = 'cuekeyGradientEnd';
+    const GRADIENT_ANGLE_STORAGE_KEY = 'cuekeyGradientAngle';
+
+    const normalizeColorValue = (colorString) => {
+        if (!colorString) return '#000000';
+        const trimmed = colorString.trim();
+        if (trimmed.startsWith('#')) {
+            if (trimmed.length === 4) {
+                const [, r, g, b] = trimmed;
+                return `#${r}${r}${g}${g}${b}${b}`.toLowerCase();
+            }
+            return trimmed.toLowerCase();
+        }
+
+        const rgbMatch = trimmed.match(/^rgba?\((\d+)[,\s]+(\d+)[,\s]+(\d+)/i);
+        if (rgbMatch) {
+            const toHex = (value) => parseInt(value, 10).toString(16).padStart(2, '0');
+            return `#${toHex(rgbMatch[1])}${toHex(rgbMatch[2])}${toHex(rgbMatch[3])}`.toLowerCase();
+        }
+
+        return '#000000';
+    }
+
+    const normalizeAngleValue = (angleString) => {
+        if (angleString == null) {
+            return 0;
+        }
+
+        const parsed = parseFloat(angleString);
+        if (!Number.isNaN(parsed)) {
+            return ((parsed % 360) + 360) % 360;
+        }
+
+        const match = angleString.trim().match(/(-?\d+(?:\.\d+)?)deg/i);
+        if (match) {
+            const value = parseFloat(match[1]);
+            if (!Number.isNaN(value)) {
+                return ((value % 360) + 360) % 360;
+            }
+        }
+
+        return 0;
+    }
+
+    const toAngleNumber = (value) => {
+        if (typeof value === 'number') {
+            if (!Number.isFinite(value)) {
+                return 0;
+            }
+            return ((value % 360) + 360) % 360;
+        }
+
+        return normalizeAngleValue(value);
+    }
+
+    const getCurrentGradientSettings = () => {
+        const computed = getComputedStyle(document.documentElement);
+        return {
+            start: normalizeColorValue(computed.getPropertyValue('--keycap-gradient-start')),
+            end: normalizeColorValue(computed.getPropertyValue('--keycap-gradient-end')),
+            angle: normalizeAngleValue(computed.getPropertyValue('--keycap-gradient-angle')),
+        };
+    }
+
+    const DEFAULT_GRADIENT = getCurrentGradientSettings();
+
+    const updateGradientPreview = (startColor, endColor, angle = DEFAULT_GRADIENT.angle) => {
+        if (!gradientPreview) return;
+        const angleValue = toAngleNumber(angle);
+        gradientPreview.style.background = `linear-gradient(${angleValue}deg, ${startColor}, ${endColor})`;
+    }
+
+    const updateAngleDisplay = (angle = DEFAULT_GRADIENT.angle) => {
+        if (!gradientAngleValue) return;
+        const numeric = typeof angle === 'number' ? angle : parseFloat(angle);
+        const fallback = toAngleNumber(DEFAULT_GRADIENT.angle);
+        const angleValue = Number.isFinite(numeric)
+            ? Math.min(Math.max(numeric, 0), 360)
+            : fallback;
+        gradientAngleValue.textContent = `${Math.round(angleValue)}°`;
+    }
+
+    const storeGradient = (startColor, endColor, angle) => {
+        try {
+            localStorage.setItem(GRADIENT_START_STORAGE_KEY, startColor);
+            localStorage.setItem(GRADIENT_END_STORAGE_KEY, endColor);
+            localStorage.setItem(GRADIENT_ANGLE_STORAGE_KEY, toAngleNumber(angle).toString());
+        } catch (error) {
+            console.warn('Unable to store gradient preferences.', error);
+        }
+    }
+
+    const loadStoredGradient = () => {
+        try {
+            const start = localStorage.getItem(GRADIENT_START_STORAGE_KEY);
+            const end = localStorage.getItem(GRADIENT_END_STORAGE_KEY);
+            const angle = localStorage.getItem(GRADIENT_ANGLE_STORAGE_KEY);
+            if (start && end) {
+                return {
+                    start,
+                    end,
+                    angle: angle !== null ? toAngleNumber(angle) : DEFAULT_GRADIENT.angle,
+                };
+            }
+        } catch (error) {
+            console.warn('Unable to load gradient preferences.', error);
+        }
+        return null;
+    }
+
+    const applyGradient = (startColor, endColor, angle = DEFAULT_GRADIENT.angle, persist = true) => {
+        const normalizedAngle = toAngleNumber(angle);
+        document.documentElement.style.setProperty('--keycap-gradient-start', startColor);
+        document.documentElement.style.setProperty('--keycap-gradient-end', endColor);
+        document.documentElement.style.setProperty('--keycap-gradient-angle', `${normalizedAngle}deg`);
+        updateGradientPreview(startColor, endColor, normalizedAngle);
+        updateAngleDisplay(normalizedAngle);
+        if (persist) {
+            storeGradient(startColor, endColor, normalizedAngle);
+        }
+    }
+
+    updateAngleDisplay(DEFAULT_GRADIENT.angle);
+    updateGradientPreview(DEFAULT_GRADIENT.start, DEFAULT_GRADIENT.end, DEFAULT_GRADIENT.angle);
+
+    const storedGradient = loadStoredGradient();
+    if (storedGradient) {
+        applyGradient(storedGradient.start, storedGradient.end, storedGradient.angle, false);
+    }
+
+    if (gradientBtn && gradientDialog && gradientStartInput && gradientEndInput && gradientAngleInput && gradientResetButton) {
+        const syncInputsToCurrent = () => {
+            const { start, end, angle } = getCurrentGradientSettings();
+            gradientStartInput.value = start;
+            gradientEndInput.value = end;
+            gradientAngleInput.value = angle;
+            updateAngleDisplay(angle);
+            updateGradientPreview(start, end, angle);
+        }
+
+        gradientBtn.addEventListener('click', () => {
+            syncInputsToCurrent();
+            gradientDialog.showModal();
+        });
+
+        const handleColorInput = () => {
+            updateGradientPreview(gradientStartInput.value, gradientEndInput.value, gradientAngleInput.value);
+        }
+
+        gradientStartInput.addEventListener('input', handleColorInput);
+        gradientEndInput.addEventListener('input', handleColorInput);
+
+        gradientAngleInput.addEventListener('input', () => {
+            updateAngleDisplay(gradientAngleInput.value);
+            handleColorInput();
+        });
+
+        gradientResetButton.addEventListener('click', () => {
+            gradientStartInput.value = DEFAULT_GRADIENT.start;
+            gradientEndInput.value = DEFAULT_GRADIENT.end;
+            gradientAngleInput.value = DEFAULT_GRADIENT.angle;
+            updateAngleDisplay(DEFAULT_GRADIENT.angle);
+            updateGradientPreview(DEFAULT_GRADIENT.start, DEFAULT_GRADIENT.end, DEFAULT_GRADIENT.angle);
+        });
+
+        gradientDialog.addEventListener('close', () => {
+            if (gradientDialog.returnValue === 'apply') {
+                applyGradient(gradientStartInput.value, gradientEndInput.value, gradientAngleInput.value);
+            } else {
+                // Reset preview to the active gradient if dialog dismissed
+                const current = getCurrentGradientSettings();
+                updateGradientPreview(current.start, current.end, current.angle);
+                updateAngleDisplay(current.angle);
+            }
+        });
     }
 });
