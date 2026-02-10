@@ -63,7 +63,7 @@ span.key>span {
     color: var(--keycap-text-color);
     text-shadow: var(--keycap-text-shadow-offset) var(--keycap-text-shadow-offset) var(--keycap-shadow-color);
 
-    font-family: 'Segoe UI Symbol', 'Noto Sans', 'Arial Unicode MS', sans-serif;
+    font-family:  ''Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Sans', 'Arial Unicode MS', sans-serif;
     font-size: large;
     text-transform: uppercase;
 }
