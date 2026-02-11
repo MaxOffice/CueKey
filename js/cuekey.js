@@ -21,6 +21,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const addCustomBtn = document.getElementById('addCustomBtn');
     const copyBtn = document.getElementById('copyBtn');
 
+    // Storage Keys
+    const GRADIENT_START_STORAGE_KEY = 'cuekeyGradientStart';
+    const GRADIENT_END_STORAGE_KEY = 'cuekeyGradientEnd';
+    const GRADIENT_ANGLE_STORAGE_KEY = 'cuekeyGradientAngle';
+    const KEY_TEXT_COLOR_STORAGE_KEY = 'cuekeyTextColor';
+    const KEY_GAP_STORAGE_KEY = 'cuekeyGap';
+    const OS_TYPE_STORAGE_KEY = 'cuekeyOsType';
+    const KEY_TYPE_STORAGE_KEY = 'cuekeyKeyType';
+    const ZOOM_STORAGE_KEY = 'cuekeyZoomLevel';
+
     // Consolidated Settings Elements
     const rbWindows = document.getElementById('rbWindows');
     const rbMac = document.getElementById('rbMac');
@@ -217,13 +227,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const zoomMin = 50;
     const zoomMax = 500;
     const zoomIncrement = 50;
-    const zoomDefault = 500;
+    const zoomDefault = 100;
 
     const updateZoom = () => {
         keyPanel.style.transform = `scale(${zoom / 100})`;
         keyPanel.style.transformOrigin = 'top left';
         zoomValue.textContent = `${zoom}%`;
         statusZoom.textContent = `Zoom: ${zoom}%`;
+        localStorage.setItem(ZOOM_STORAGE_KEY, zoom.toString());
     }
 
     zoomIn.addEventListener('click', function () {
@@ -241,7 +252,8 @@ document.addEventListener('DOMContentLoaded', function () {
         updateZoom();
     });
 
-    let zoom = zoomDefault;
+    const savedZoom = localStorage.getItem(ZOOM_STORAGE_KEY);
+    let zoom = savedZoom ? parseInt(savedZoom, 10) : zoomDefault;
     updateZoom();
 
     // Copy and Save button functionality
@@ -416,7 +428,7 @@ document.addEventListener('DOMContentLoaded', function () {
         modifierCountMap.Control = 0;
         modifierCountMap.Shift = 0;
         modifierCountMap.Meta = 0;
-        txtInput.textContent = "";
+        txtInput.value = "";
         txtInput.focus();
     });
 
@@ -434,13 +446,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Settings functionality
-    const GRADIENT_START_STORAGE_KEY = 'cuekeyGradientStart';
-    const GRADIENT_END_STORAGE_KEY = 'cuekeyGradientEnd';
-    const GRADIENT_ANGLE_STORAGE_KEY = 'cuekeyGradientAngle';
-    const KEY_TEXT_COLOR_STORAGE_KEY = 'cuekeyTextColor';
-    const KEY_GAP_STORAGE_KEY = 'cuekeyGap';
-    const OS_TYPE_STORAGE_KEY = 'cuekeyOsType';
-    const KEY_TYPE_STORAGE_KEY = 'cuekeyKeyType';
 
     const normalizeColorValue = (colorString) => {
         if (!colorString) return '#000000';
@@ -514,7 +519,10 @@ document.addEventListener('DOMContentLoaded', function () {
             document.documentElement.style.setProperty('--keycap-text-color', settings.textColor);
             document.documentElement.style.setProperty('--preview-keycap-text-color', settings.textColor);
         }
-        if (settings.gap) document.documentElement.style.setProperty('--key-gap', settings.gap);
+        if (settings.gap) {
+            document.documentElement.style.setProperty('--key-gap', settings.gap);
+            document.documentElement.style.setProperty('--preview-key-gap', settings.gap);
+        }
 
         if (settings.os) {
             document.body.setAttribute('data-os', settings.os);

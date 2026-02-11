@@ -349,4 +349,6 @@ body[data-os="mac"] span.macbigbigkey>span,
 .previewPanel[data-os="linux"] span.macbigbigkey,
 .previewPanel[data-os="linux"] span.macbigbigkey>span {
     width: var(--keyheight);
+    padding: var(--keycap-padding);
+    border-radius: var(--keycap-curve-radius);
 }
