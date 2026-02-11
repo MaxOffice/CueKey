@@ -7,12 +7,13 @@ This is useful for creating user manuals, instructional videos or educational co
 ## Features
 1. Supports individual keystrokes 
 2. Supports combination keystrokes
-3. Add Windows key
+3. Add Windows/Command ⌘ key
 4. Add Blank key
 5. Add custom key text
-6. Scale image from 100% to 500%
+6. Scale image from 50% to 500%
 7. Download transparent PNG file
-8. Customize the key gradient colors
+8. Two choices for key appearance: mechanical and chiclet 
+9. Customize the mechanical key gradient colors
 
 ## How to use 
 1. Type keystrokes individually
@@ -24,10 +25,10 @@ This is useful for creating user manuals, instructional videos or educational co
   * For example, press `CTRL SHIFT C` keys together.
   * Image for `SHIFT` `CTRL` `C` is created.
 3. Scale the image as needed
-  * Default scale is 200%
+  * Default scale is 500%
   * Range is between 50% and 500% in 50% increments
 4. Save image
-  * Click the `Save PNG` button.
+  * Click the `Save PNG (⤓)` button.
   * Transparent PNG file is saved in currently selected scale.
   * Currently, only PNG files are supported.
 
@@ -51,40 +52,32 @@ latest code changes in a browser with a lightweight static server.
 
 ## How to correct mistakes
 If you press Backspace key, it will generate an image for it.
-To correct mistakes, click the `Bksp` button on top.
+To correct mistakes, click the `Backspace (⌫)` button on top.
 This will remove the last typed key.
-Click the `❌Clear` button to delete all keystrokes.
+Click the `Clear (🗑)` button to delete all keystrokes.
 
 ## Pressing Windows key combinations
-Some Windows key combinations have undesirable effects. 
-For example, pressing the Windows key itself will open the Start menu or Pressing Windows key and L will lock the PC.
-To avoid these side effects, click the `Add 🪟` button in menu.
+Some Windows key combinations have undesirable effects. For example, pressing the Windows key itself will open the Start menu or Pressing Windows key and L will lock the PC. To avoid these side effects, click the `Add 🪟` button in menu.
 
 ## Blank key
-If the key you want is not supported, use the Blank key - `Add` button.
-This adds a key without anything written on it.
-Save the image and add the text you need in any image or video editor.
+If the key you want is not supported, use the Blank key - `Add` button. This adds a key without anything written on it. Save the image and add the text you need in any image or video editor.
 
 ## Custom keys
-You can type any custom key name in the textbox and click `Add`.
-Maximum of 15 characters are supported.
-The image size will adjust automatically.
+You can type any custom key name in the textbox and click `Add`. Maximum 15 characters are supported. The image size will adjust automatically.
 
 ## Order of modifier keys
-If modifier keys are pressed together, the order is `Windows` `SHIFT` `CTRL` `ALT`
-If you want custom order, type each key individually.
+If modifier keys are pressed together, the order is `Windows/Command` `SHIFT` `CTRL` `ALT/Option`.
+If you want a different order, type each key individually.
+
+## Settings
+
+Press the `Settings (⚙)` button to open settings. Here, you can:
+
+* choose the platform: Windows, macOS or Linux
+* choose the key style: Mechanical or Chiclet. If key style is mechanical, you can also choose:
+    * Key text color
+    * Key surface gradient
+* choose the gap between keys
 
 ## Feedback and Feature requests
 Your feedback is welcome. Please post as Issues in GitHub.
-
-## Testing the custom key gradient
-
-Follow these manual steps to verify the gradient customization dialog works as expected:
-
-1. Start a static file server in the repository root (for example, `python3 -m http.server 8000`) and open `http://localhost:8000` in a modern desktop browser.
-2. Click the **Gradient** button in the toolbar. The dialog should display the current start and end colors in the color pickers and preview swatch.
-3. Choose two distinct colors. Confirm the preview updates immediately to reflect the new gradient.
-4. Press **Apply**. Existing keys on the canvas (or a new key you add by typing) should render with the selected gradient.
-5. Reload the page. The toolbar button and keys should retain the colors you selected, confirming the gradient preference persisted to `localStorage`.
-6. (Optional) Clear the browser storage entry `cuekeyGradientStart`/`cuekeyGradientEnd` to reset to the default gradient.
-

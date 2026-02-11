@@ -6,7 +6,8 @@
     --keycap-gradient-end: #000;
     --keycap-gradient-angle: 135deg;
     --keycap-text-color: white;
-    --keycap-shadow-color: rgba(0,0,0,0.75);
+    --key-gap: 0.5rem;
+    --keycap-shadow-color: rgba(0, 0, 0, 0.75);
 
     --keycap-padding: 0.1rem 0.5rem 0.5rem 0.1rem;
     --keycap-bigbig-padding: 0.3rem 0.5rem 0.5rem 0.3rem;
@@ -17,6 +18,12 @@
     --keycap-top-size: 85%;
 
     --keycap-text-shadow-offset: 0.5px;
+
+    --preview-keycap-text-color: var(--keycap-text-color);
+    --preview-key-gap: var(--key-gap);
+    --preview-keycap-gradient-angle: var(--keycap-gradient-angle);
+    --preview-keycap-gradient-start: var(--keycap-gradient-start);
+    --preview-keycap-gradient-end: var(--keycap-gradient-end);
 }
 
 .key-content {
@@ -36,7 +43,7 @@ span.key {
     height: var(--keyheight);
     width: var(--keyheight);
 
-    margin: 0.25rem 0.5rem;
+    margin: 0.25rem var(--key-gap);
     padding: var(--keycap-padding);
 
     border-radius: var(--keycap-curve-radius);
@@ -63,7 +70,7 @@ span.key>span {
     color: var(--keycap-text-color);
     text-shadow: var(--keycap-text-shadow-offset) var(--keycap-text-shadow-offset) var(--keycap-shadow-color);
 
-    font-family:  'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Sans', 'Arial Unicode MS', sans-serif;
+    font-family: 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Sans', 'Arial Unicode MS', sans-serif;
     font-size: large;
     text-transform: uppercase;
 }
@@ -114,7 +121,8 @@ span.bold>span {
 }
 
 /* Chiclet keyboard */
-body.chiclet  {
+body.chiclet,
+.previewPanel.chiclet {
     --keycap-curve-radius: 5px;
     --keycap-bigbig-curve-radius: 5px;
 
@@ -123,15 +131,17 @@ body.chiclet  {
 }
 
 body.chiclet .panelContainer {
-    background: linear-gradient(to top, #fff 0%, #f2f2f2 25%, rgba(68,68,68, 0.3) 100%);
+    background: linear-gradient(to top, #fff 0%, #f2f2f2 25%, rgba(68, 68, 68, 0.3) 100%);
 }
 
-body.chiclet .key-content {
+body.chiclet .key-content,
+.previewPanel.chiclet .key-content {
     gap: 8px;
     row-gap: 8px;
 }
 
-body.chiclet span.key {
+body.chiclet span.key,
+.previewPanel.chiclet span.key {
     gap: 0;
     row-gap: 0;
 
@@ -139,7 +149,7 @@ body.chiclet span.key {
     border: 1px solid #f2f2f2;
 
     transition: box-shadow 0.3s ease, transform 0.15s ease;
-    
+
     box-shadow: 0 0 1px #888,
         0 1px 0 #fff,
         0 6px 0 #C0C0C0,
@@ -149,7 +159,8 @@ body.chiclet span.key {
         0 9px 16px rgba(68, 68, 68, 0.1);
 }
 
-body.chiclet span.key>span {
+body.chiclet span.key>span,
+.previewPanel.chiclet span.key>span {
     border: 0;
     margin: 0;
     padding: 0;
@@ -160,20 +171,104 @@ body.chiclet span.key>span {
 
     line-height: 80px;
     font-size: 24px;
-    
+
     text-shadow: 0 0.5px 1px #777, 0 2px 6px #f2f2f2;
 }
 
-body.chiclet span.key>span:has(>br) {
+body.chiclet span.key>span:has(>br),
+.previewPanel.chiclet span.key>span:has(>br) {
     font-size: 0.95rem;
 }
 
-body.chiclet span.key>span>br {
+body.chiclet span.key>span>br,
+.previewPanel.chiclet span.key>span>br {
     display: none;
 }
 
+/* Preview panel chiclet*/
+.previewPanel.chiclet span.key {
+    gap: 0;
+    row-gap: 0;
+    margin-right: var(--preview-key-gap);
+}
+
+/* Preview panel mechanical */
+.previewPanel.mechanical {
+    --keycap-curve-radius: 5px;
+    --keycap-bigbig-curve-radius: 5px;
+
+    --keycap-padding: 0.1rem 0.5rem 0.5rem 0.1rem;
+
+    background: unset;
+}
+
+.previewPanel.mechanical .key-content {
+    gap: unset;
+    row-gap: unset;
+    --keycap-text-color: unset;
+    --keycap-text-shadow-offset: unset;
+    --keycap-shadow-color: unset;
+}
+
+.previewPanel.mechanical span.key {
+    gap: unset;
+    row-gap: unset;
+    border: unset;
+    transition: unset;
+    box-shadow: unset;
+
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0.25rem var(--preview-key-gap);
+    padding: var(--keycap-padding);
+
+    border-radius: var(--keycap-curve-radius);
+
+    background: linear-gradient(var(--preview-keycap-gradient-angle), var(--preview-keycap-gradient-start), var(--preview-keycap-gradient-end));
+
+}
+
+.previewPanel.mechanical span.key>span {
+    border: unset;
+    margin: unset;
+    padding: unset;
+
+    width: unset;
+    height: unset;
+    background: unset;
+
+    line-height: unset;
+    font-size: unset;
+
+    text-shadow: unset;
+
+    border-radius: var(--keycap-curve-radius);
+    border: 1px solid var(--inner-border-color);
+
+    width: var(--keycap-top-size);
+    height: var(--keycap-top-size);
+    background: linear-gradient(calc(var(--preview-keycap-gradient-angle) + 180deg), var(--preview-keycap-gradient-start), var(--preview-keycap-gradient-end));
+
+    color: var(--preview-keycap-text-color);
+    text-shadow: var(--keycap-text-shadow-offset) var(--keycap-text-shadow-offset) var(--keycap-shadow-color);
+}
+
+.previewPanel.mechanical span.key>span:has(>br) {
+    font-size: unset;
+}
+
+.previewPanel.mechanical span.key>span>br {
+    display: unset;
+}
+
 /* OS-Specific stuff */
-.windowsonly, .maconly, .linuxonly  {
+.windowsonly,
+.maconly,
+.linuxonly {
     display: none;
 }
 
@@ -189,27 +284,69 @@ body[data-os="linux"] .linuxonly {
     display: unset;
 }
 
-body[data-os="mac"] span.macbigkey {
+body[data-os="mac"] span.macbigkey,
+.previewPanel[data-os="mac"] span.macbigkey {
     width: calc(1.25*var(--keyheight));
 }
 
-body[data-os="mac"] span.macbigkey>span {
+body[data-os="mac"] span.macbigkey>span,
+.previewPanel[data-os="mac"] span.macbigkey>span {
     width: var(--keycap-top-size);
     text-transform: none;
 }
 
-body[data-os="mac"] span.macbigbigkey {
+body[data-os="mac"] span.macbigbigkey,
+.previewPanel[data-os="mac"] span.macbigbigkey {
     width: calc(2.25*var(--keyheight));
     padding: var(--keycap-bigbig-padding);
 
     border-radius: var(--keycap-bigbig-curve-radius);
 }
 
-body[data-os="mac"] span.macbigbigkey>span {
+body[data-os="mac"] span.macbigbigkey>span,
+.previewPanel[data-os="mac"] span.macbigbigkey>span {
     width: 95%;
     height: 95%;
 
     border-radius: var(--keycap-bigbig-curve-radius);
 
     text-transform: none;
+}
+
+.previewPanel[data-os="windows"] .linuxonly,
+.previewPanel[data-os="windows"] .maconly {
+    display: none;
+}
+
+.previewPanel[data-os="mac"] .windowsonly,
+.previewPanel[data-os="mac"] .linuxonly {
+    display: none;
+}
+
+.previewPanel[data-os="linux"] .windowsonly,
+.previewPanel[data-os="linux"] .maconly {
+    display: none;
+}
+
+.previewPanel[data-os="windows"] .windowsonly {
+    display: unset;
+}
+
+.previewPanel[data-os="mac"] .maconly {
+    display: unset;
+}
+
+.previewPanel[data-os="linux"] .linuxonly {
+    display: unset;
+}
+
+.previewPanel[data-os="windows"] span.macbigkey,
+.previewPanel[data-os="windows"] span.macbigkey>span,
+.previewPanel[data-os="windows"] span.macbigbigkey,
+.previewPanel[data-os="windows"] span.macbigbigkey>span,
+.previewPanel[data-os="linux"] span.macbigkey,
+.previewPanel[data-os="linux"] span.macbigkey>span,
+.previewPanel[data-os="linux"] span.macbigbigkey,
+.previewPanel[data-os="linux"] span.macbigbigkey>span {
+    width: var(--keyheight);
 }

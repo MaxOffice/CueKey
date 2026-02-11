@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const displayContent = document.getElementById('displayContent');
     const saveBtn = document.getElementById('saveBtn');
     const settingsBtn = document.getElementById('settingsBtn');
+    const settingsDialog = document.getElementById('settingsDialog');
+    const settingsCloseButton = document.getElementById('settingsCloseButton');
     const zoomIn = document.getElementById('zoomIn');
     const zoomOut = document.getElementById('zoomOut');
     const zoomReset = document.getElementById('zoomReset');
@@ -18,14 +20,31 @@ document.addEventListener('DOMContentLoaded', function () {
     const txtCustom = document.getElementById('txtCustom');
     const addCustomBtn = document.getElementById('addCustomBtn');
     const copyBtn = document.getElementById('copyBtn');
-    const gradientBtn = document.getElementById('gradientBtn');
-    const gradientDialog = document.getElementById('gradientDialog');
+
+    // Consolidated Settings Elements
+    const rbWindows = document.getElementById('rbWindows');
+    const rbMac = document.getElementById('rbMac');
+    const rbLinux = document.getElementById('rbLinux');
+    const rbMechanical = document.getElementById('rbMechanical');
+    const rbChiclet = document.getElementById('rbChiclet');
+
     const gradientStartInput = document.getElementById('gradientStart');
     const gradientEndInput = document.getElementById('gradientEnd');
-    const gradientPreview = document.getElementById('gradientPreview');
     const gradientAngleInput = document.getElementById('gradientAngle');
     const gradientAngleValue = document.getElementById('gradientAngleValue');
     const gradientResetButton = document.getElementById('gradientResetButton');
+
+    const keyTextColorInput = document.getElementById('keyTextColor');
+    const resetTextColorBtn = document.getElementById('resetTextColorBtn');
+
+    const keyGapInput = document.getElementById('keyGap');
+    const keyGapValueDisplay = document.getElementById('keyGapValue');
+    const resetGapBtn = document.getElementById('resetGapBtn');
+
+    const settingsPreviewPanel = document.getElementById('settingsPreviewPanel');
+
+    const mechanicalTextColor = document.getElementById('mechanicalTextColor');
+    const mechanicalTextGradient = document.getElementById('mechanicalTextGradient');
 
     // Input functionality
     const keyString = (keycap, keyclasses) => {
@@ -415,65 +434,13 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Settings functionality
-
-    // Settings button functionality
-    settingsBtn.addEventListener('click', function () {
-        const settingDialog = document.getElementById('settingDialog');
-        settingDialog.showModal();
-    });
-
-    // Settings dialog functionality
-    const osTypeChanged = (e) => {
-        document.body.setAttribute('data-os', e.target.value)
-    }
-
-    const keyTypeChanged = (e) => {
-        const keytype = document.querySelector('dialog input[name="keytype"]:checked').value
-        if (keytype === 'chiclet') {
-            document.body.classList.add('chiclet');
-        } else {
-            document.body.classList.remove('chiclet')
-        }
-    }
-
-    const choiceImageClicked = (e) => {
-        const parentDiv = e.target.parentNode;
-        const rb = parentDiv?.querySelector('input[type="radio"]');
-        if (rb) rb.click();
-    }
-
-    // Handle OS type Change
-    document.querySelectorAll('dialog input[name="ostype"]').forEach(
-        item => item.addEventListener('click', osTypeChanged)
-    );
-
-    // Handle key type change 
-    document.querySelectorAll('dialog input[name="keytype"]').forEach(
-        item => item.addEventListener('click', keyTypeChanged)
-    );
-
-    // Make radio button images clickable
-    document.querySelectorAll('dialog fieldset div>img').forEach(
-        item => item.addEventListener('click', choiceImageClicked)
-    );
-
-    // Set initial values of settings
-    if ((navigator.userAgent.indexOf('Mac ') > -1)) {
-        document.getElementById('rbMac').checked = true;
-        document.body.setAttribute('data-os', 'mac');
-    }
-    else if (navigator.userAgent.indexOf('Linux ') > -1) {
-        document.getElementById('rbLinux').checked = true;
-        document.body.setAttribute('data-os', 'linux');
-    } else {
-        document.getElementById('rbWindows').checked = true;
-        document.body.setAttribute('data-os', 'windows');
-    }
-
-    // Gradient settings functionality
     const GRADIENT_START_STORAGE_KEY = 'cuekeyGradientStart';
     const GRADIENT_END_STORAGE_KEY = 'cuekeyGradientEnd';
     const GRADIENT_ANGLE_STORAGE_KEY = 'cuekeyGradientAngle';
+    const KEY_TEXT_COLOR_STORAGE_KEY = 'cuekeyTextColor';
+    const KEY_GAP_STORAGE_KEY = 'cuekeyGap';
+    const OS_TYPE_STORAGE_KEY = 'cuekeyOsType';
+    const KEY_TYPE_STORAGE_KEY = 'cuekeyKeyType';
 
     const normalizeColorValue = (colorString) => {
         if (!colorString) return '#000000';
@@ -496,159 +463,205 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const normalizeAngleValue = (angleString) => {
-        if (angleString == null) {
-            return 0;
-        }
-
+        if (angleString == null) return 0;
         const parsed = parseFloat(angleString);
-        if (!Number.isNaN(parsed)) {
-            return ((parsed % 360) + 360) % 360;
-        }
-
-        const match = angleString.trim().match(/(-?\d+(?:\.\d+)?)deg/i);
-        if (match) {
-            const value = parseFloat(match[1]);
-            if (!Number.isNaN(value)) {
-                return ((value % 360) + 360) % 360;
-            }
-        }
-
+        if (!Number.isNaN(parsed)) return ((parsed % 360) + 360) % 360;
         return 0;
     }
 
-    const toAngleNumber = (value) => {
-        if (typeof value === 'number') {
-            if (!Number.isFinite(value)) {
-                return 0;
-            }
-            return ((value % 360) + 360) % 360;
-        }
-
-        return normalizeAngleValue(value);
-    }
-
-    const getCurrentGradientSettings = () => {
+    const getCurrentSettings = () => {
         const computed = getComputedStyle(document.documentElement);
         return {
             start: normalizeColorValue(computed.getPropertyValue('--keycap-gradient-start')),
             end: normalizeColorValue(computed.getPropertyValue('--keycap-gradient-end')),
             angle: normalizeAngleValue(computed.getPropertyValue('--keycap-gradient-angle')),
+            textColor: normalizeColorValue(computed.getPropertyValue('--keycap-text-color')),
+            gap: computed.getPropertyValue('--key-gap').trim() || '0.5rem',
+            os: document.body.getAttribute('data-os') || 'windows',
+            keyStyle: document.body.classList.contains('chiclet') ? 'chiclet' : 'mechanical'
         };
     }
 
-    const DEFAULT_GRADIENT = getCurrentGradientSettings();
+    const DEFAULT_SETTINGS = {
+        start: '#646464',
+        end: '#000000',
+        angle: 135,
+        textColor: '#ffffff',
+        gap: '0.5rem',
+        os: 'windows',
+        keyStyle: 'mechanical'
+    };
 
-    const updateGradientPreview = (startColor, endColor, angle = DEFAULT_GRADIENT.angle) => {
-        if (!gradientPreview) return;
-        const angleValue = toAngleNumber(angle);
-        gradientPreview.style.background = `linear-gradient(${angleValue}deg, ${startColor}, ${endColor})`;
+    const applyMechanicalKeyStyle = () => {
+        settingsPreviewPanel.classList.remove('chiclet');
+        settingsPreviewPanel.classList.add('mechanical');
+        mechanicalTextColor.classList.remove('hidden-in-place');
+        mechanicalTextGradient.classList.remove('hidden-in-place');
     }
 
-    const updateAngleDisplay = (angle = DEFAULT_GRADIENT.angle) => {
-        if (!gradientAngleValue) return;
-        const numeric = typeof angle === 'number' ? angle : parseFloat(angle);
-        const fallback = toAngleNumber(DEFAULT_GRADIENT.angle);
-        const angleValue = Number.isFinite(numeric)
-            ? Math.min(Math.max(numeric, 0), 360)
-            : fallback;
-        gradientAngleValue.textContent = `${Math.round(angleValue)}°`;
+    const applyChicletKeyStyle = () => {
+        settingsPreviewPanel.classList.remove('mechanical');
+        settingsPreviewPanel.classList.add('chiclet');
+        mechanicalTextColor.classList.add('hidden-in-place');
+        mechanicalTextGradient.classList.add('hidden-in-place');
     }
 
-    const storeGradient = (startColor, endColor, angle) => {
-        try {
-            localStorage.setItem(GRADIENT_START_STORAGE_KEY, startColor);
-            localStorage.setItem(GRADIENT_END_STORAGE_KEY, endColor);
-            localStorage.setItem(GRADIENT_ANGLE_STORAGE_KEY, toAngleNumber(angle).toString());
-        } catch (error) {
-            console.warn('Unable to store gradient preferences.', error);
+    const applySettings = (settings, persist = true) => {
+        if (settings.start) document.documentElement.style.setProperty('--keycap-gradient-start', settings.start);
+        if (settings.end) document.documentElement.style.setProperty('--keycap-gradient-end', settings.end);
+        if (settings.angle !== undefined) document.documentElement.style.setProperty('--keycap-gradient-angle', `${settings.angle}deg`);
+        if (settings.textColor) {
+            document.documentElement.style.setProperty('--keycap-text-color', settings.textColor);
+            document.documentElement.style.setProperty('--preview-keycap-text-color', settings.textColor);
+        }
+        if (settings.gap) document.documentElement.style.setProperty('--key-gap', settings.gap);
+
+        if (settings.os) {
+            document.body.setAttribute('data-os', settings.os);
+            settingsPreviewPanel.setAttribute('data-os', settings.os);
+            const rb = document.getElementById(`rb${settings.os.charAt(0).toUpperCase() + settings.os.slice(1)}`);
+            if (rb) rb.checked = true;
+        }
+
+        if (settings.keyStyle) {
+            if (settings.keyStyle === 'chiclet') {
+                document.body.classList.add('chiclet');
+                applyChicletKeyStyle();
+            } else {
+                document.body.classList.remove('chiclet');
+                applyMechanicalKeyStyle();
+            }
+            const rb = document.getElementById(`rb${settings.keyStyle.charAt(0).toUpperCase() + settings.keyStyle.slice(1)}`);
+            if (rb) rb.checked = true;
+        }
+
+        if (persist) {
+            if (settings.start) localStorage.setItem(GRADIENT_START_STORAGE_KEY, settings.start);
+            if (settings.end) localStorage.setItem(GRADIENT_END_STORAGE_KEY, settings.end);
+            if (settings.angle !== undefined) localStorage.setItem(GRADIENT_ANGLE_STORAGE_KEY, settings.angle.toString());
+            if (settings.textColor) localStorage.setItem(KEY_TEXT_COLOR_STORAGE_KEY, settings.textColor);
+            if (settings.gap) localStorage.setItem(KEY_GAP_STORAGE_KEY, settings.gap);
+            if (settings.os) localStorage.setItem(OS_TYPE_STORAGE_KEY, settings.os);
+            if (settings.keyStyle) localStorage.setItem(KEY_TYPE_STORAGE_KEY, settings.keyStyle);
         }
     }
 
-    const loadStoredGradient = () => {
+    const loadSettings = () => {
+        const settings = { ...DEFAULT_SETTINGS };
         try {
             const start = localStorage.getItem(GRADIENT_START_STORAGE_KEY);
             const end = localStorage.getItem(GRADIENT_END_STORAGE_KEY);
             const angle = localStorage.getItem(GRADIENT_ANGLE_STORAGE_KEY);
-            if (start && end) {
-                return {
-                    start,
-                    end,
-                    angle: angle !== null ? toAngleNumber(angle) : DEFAULT_GRADIENT.angle,
-                };
-            }
-        } catch (error) {
-            console.warn('Unable to load gradient preferences.', error);
-        }
-        return null;
+            const textColor = localStorage.getItem(KEY_TEXT_COLOR_STORAGE_KEY);
+            const gap = localStorage.getItem(KEY_GAP_STORAGE_KEY);
+            const os = localStorage.getItem(OS_TYPE_STORAGE_KEY);
+            const keyStyle = localStorage.getItem(KEY_TYPE_STORAGE_KEY);
+
+            if (start) settings.start = start;
+            if (end) settings.end = end;
+            if (angle) settings.angle = parseFloat(angle);
+            if (textColor) settings.textColor = textColor;
+            if (gap) settings.gap = gap;
+            if (os) settings.os = os;
+            if (keyStyle) settings.keyStyle = keyStyle;
+        } catch (e) { console.warn("Load settings failed", e); }
+        return settings;
     }
 
-    const applyGradient = (startColor, endColor, angle = DEFAULT_GRADIENT.angle, persist = true) => {
-        const normalizedAngle = toAngleNumber(angle);
-        document.documentElement.style.setProperty('--keycap-gradient-start', startColor);
-        document.documentElement.style.setProperty('--keycap-gradient-end', endColor);
-        document.documentElement.style.setProperty('--keycap-gradient-angle', `${normalizedAngle}deg`);
-        updateGradientPreview(startColor, endColor, normalizedAngle);
-        updateAngleDisplay(normalizedAngle);
-        if (persist) {
-            storeGradient(startColor, endColor, normalizedAngle);
-        }
+    // Initialize UI
+    const initialSettings = loadSettings();
+    applySettings(initialSettings, false);
+
+    settingsBtn.addEventListener('click', () => {
+        const current = getCurrentSettings();
+        gradientStartInput.value = current.start;
+        gradientEndInput.value = current.end;
+        gradientAngleInput.value = current.angle;
+        gradientAngleValue.textContent = `${current.angle}°`;
+        keyTextColorInput.value = current.textColor;
+        const gapNum = parseFloat(current.gap);
+        keyGapInput.value = gapNum;
+        keyGapValueDisplay.textContent = `${gapNum}rem`;
+
+        applySettings(current, false); // Update preview
+        settingsDialog.showModal();
+    });
+
+    rbWindows.addEventListener('change', () => {
+        settingsPreviewPanel.setAttribute('data-os', 'windows');
+    });
+
+    rbMac.addEventListener('change', () => {
+        settingsPreviewPanel.setAttribute('data-os', 'mac');
+    });
+
+    rbLinux.addEventListener('change', () => {
+        settingsPreviewPanel.setAttribute('data-os', 'linux');
+    });
+
+    rbMechanical.addEventListener('change', () => {
+        applyMechanicalKeyStyle();
+    });
+
+    rbChiclet.addEventListener('change', () => {
+        applyChicletKeyStyle();
+    });
+
+    const updatePreviewFromInputs = () => {
+        document.documentElement.style.setProperty('--preview-keycap-gradient-angle', `${gradientAngleInput.value}deg`);
+        document.documentElement.style.setProperty('--preview-keycap-gradient-start', gradientStartInput.value);
+        document.documentElement.style.setProperty('--preview-keycap-gradient-end', gradientEndInput.value);
     }
 
-    // Initialize gradient settings
-    updateAngleDisplay(DEFAULT_GRADIENT.angle);
-    updateGradientPreview(DEFAULT_GRADIENT.start, DEFAULT_GRADIENT.end, DEFAULT_GRADIENT.angle);
+    gradientStartInput.addEventListener('input', updatePreviewFromInputs);
+    gradientEndInput.addEventListener('input', updatePreviewFromInputs);
+    gradientAngleInput.addEventListener('input', () => {
+        gradientAngleValue.textContent = `${gradientAngleInput.value}°`;
+        updatePreviewFromInputs();
+    });
 
-    const storedGradient = loadStoredGradient();
-    if (storedGradient) {
-        applyGradient(storedGradient.start, storedGradient.end, storedGradient.angle, false);
-    }
+    keyGapInput.addEventListener('input', () => {
+        keyGapValueDisplay.textContent = `${keyGapInput.value}rem`;
+        document.documentElement.style.setProperty('--preview-key-gap', `${keyGapInput.value}rem`);
+    });
 
-    if (gradientBtn && gradientDialog && gradientStartInput && gradientEndInput && gradientAngleInput && gradientResetButton) {
-        const syncInputsToCurrent = () => {
-            const { start, end, angle } = getCurrentGradientSettings();
-            gradientStartInput.value = start;
-            gradientEndInput.value = end;
-            gradientAngleInput.value = angle; // Assuming this input accepts an angle number/string
-            updateAngleDisplay(angle);
-            updateGradientPreview(start, end, angle);
+    resetGapBtn.addEventListener('click', () => {
+        keyGapInput.value = 0.5;
+        keyGapValueDisplay.textContent = `0.5rem`;
+        document.documentElement.style.setProperty('--preview-key-gap', `0.5rem`);
+    });
+
+    keyTextColorInput.addEventListener('input', () => {
+        document.documentElement.style.setProperty('--preview-keycap-text-color', keyTextColorInput.value);
+    });
+
+    resetTextColorBtn.addEventListener('click', () => {
+        keyTextColorInput.value = '#ffffff';
+        document.documentElement.style.setProperty('--preview-keycap-text-color', '#ffffff');
+    });
+
+    gradientResetButton.addEventListener('click', () => {
+        gradientStartInput.value = DEFAULT_SETTINGS.start;
+        gradientEndInput.value = DEFAULT_SETTINGS.end;
+        gradientAngleInput.value = DEFAULT_SETTINGS.angle;
+        gradientAngleValue.textContent = `${DEFAULT_SETTINGS.angle}°`;
+        updatePreviewFromInputs();
+    });
+
+    settingsDialog.addEventListener('close', () => {
+        if (settingsDialog.returnValue === 'apply') {
+            const os = document.querySelector('input[name="ostype"]:checked').value;
+            const keyStyle = document.querySelector('input[name="keytype"]:checked').value;
+
+            applySettings({
+                start: gradientStartInput.value,
+                end: gradientEndInput.value,
+                angle: parseFloat(gradientAngleInput.value),
+                textColor: keyTextColorInput.value,
+                gap: `${keyGapInput.value}rem`,
+                os: os,
+                keyStyle: keyStyle
+            });
         }
-
-        gradientBtn.addEventListener('click', () => {
-            syncInputsToCurrent();
-            gradientDialog.showModal();
-        });
-
-        const handleColorInput = () => {
-            // Update preview based on current input values (colors and angle)
-            updateGradientPreview(gradientStartInput.value, gradientEndInput.value, gradientAngleInput.value);
-        }
-
-        gradientStartInput.addEventListener('input', handleColorInput);
-        gradientEndInput.addEventListener('input', handleColorInput);
-
-        gradientAngleInput.addEventListener('input', () => {
-            updateAngleDisplay(gradientAngleInput.value);
-            handleColorInput();
-        });
-
-        gradientResetButton.addEventListener('click', () => {
-            gradientStartInput.value = DEFAULT_GRADIENT.start;
-            gradientEndInput.value = DEFAULT_GRADIENT.end;
-            // Set input value to the numeric angle for proper display
-            gradientAngleInput.value = DEFAULT_GRADIENT.angle; 
-            updateAngleDisplay(DEFAULT_GRADIENT.angle);
-            updateGradientPreview(DEFAULT_GRADIENT.start, DEFAULT_GRADIENT.end, DEFAULT_GRADIENT.angle);
-        });
-
-        gradientDialog.addEventListener('close', () => {
-            if (gradientDialog.returnValue === 'apply') {
-                applyGradient(gradientStartInput.value, gradientEndInput.value, gradientAngleInput.value);
-            } else {
-                // Reset preview to the active gradient if dialog dismissed
-                const current = getCurrentGradientSettings();
-                updateGradientPreview(current.start, current.end, current.angle);
-                updateAngleDisplay(current.angle);
-            }
-        });
-    }
+    });
 });
