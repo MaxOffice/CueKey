@@ -10,7 +10,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const zoomOut = document.getElementById('zoomOut');
     const zoomReset = document.getElementById('zoomReset');
     const zoomValue = document.getElementById('zoomValue');
-    const statusZoom = document.getElementById('status');
+    const statusZoom = document.getElementById('statusZoom');
+    const statusPlatform = document.getElementById('statusPlatform');
+    const statusKeyStyle = document.getElementById('statusKeyStyle');
     const saveStatus = document.getElementById('saveStatus');
     const chkWinkey = document.getElementById('chkWinKey');
     const addMetaBtn = document.getElementById('addMetaBtn');
@@ -529,6 +531,8 @@ document.addEventListener('DOMContentLoaded', function () {
             settingsPreviewPanel.setAttribute('data-os', settings.os);
             const rb = document.getElementById(`rb${settings.os.charAt(0).toUpperCase() + settings.os.slice(1)}`);
             if (rb) rb.checked = true;
+
+            statusPlatform.textContent = `Platform: ${settings.os.charAt(0).toUpperCase() + settings.os.slice(1)}`;
         }
 
         if (settings.keyStyle) {
@@ -541,6 +545,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             const rb = document.getElementById(`rb${settings.keyStyle.charAt(0).toUpperCase() + settings.keyStyle.slice(1)}`);
             if (rb) rb.checked = true;
+
+            statusKeyStyle.textContent = `Key Style: ${settings.keyStyle.charAt(0).toUpperCase() + settings.keyStyle.slice(1)}`;
         }
 
         if (persist) {
